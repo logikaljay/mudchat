@@ -26,8 +26,14 @@ var Handshake = function(socket, cb) {
   socket.on('data', function(data) {
     var str = data.toString();
     var nameAndIp = [];
+
+    // check if our handshake data contains the expected :
     if (str.indexOf(':') > -1) {
+
+      // split the string by the :
       var result = str.split(':', 2);
+
+      // check the first part of the string to get the protocol
       if (result[0] == 'CHAT') {
         // MudMaster protocol
         nameAndIp = result[1].split('\n');
@@ -42,6 +48,7 @@ var Handshake = function(socket, cb) {
         return self;
       }
 
+      // make sure nameAndIp is valid before progressing
       if (nameAndIp.length > 0) {
         // push the new connection to our list of clients
         self.name = nameAndIp[0];
@@ -65,6 +72,8 @@ var Handshake = function(socket, cb) {
         // callback with self
         self.cb(self);
       } else {
+
+        // callback with undefined
         self.cb();
       }
     }
