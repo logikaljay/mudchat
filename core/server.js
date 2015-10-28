@@ -60,12 +60,12 @@ function createServer(port) {
       // emit an event about the handshake
       process.emit('chat.client.handshake', handshake);
 
-      if (typeof client !== 'undefined') {
+      if (typeof handshake !== 'undefined') {
         var client = new Client(handshake.name, handshake.ip);
-        client.socket = socket;
         client.port = handshake.port;
         client.protocol = handshake.protocol;
         self.clients.push(client);
+        client.setSocket(socket);
       }
     });
 

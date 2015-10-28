@@ -2,6 +2,7 @@ var name;
 var ip;
 var port;
 var protocol;
+var version;
 var socket;
 var cb;
 
@@ -69,8 +70,20 @@ var Handshake = function(socket, cb) {
         var version = new Buffer(commands._version + hexName + commands._end, 'hex');
         self.socket.write(version);
 
-        // callback with self
-        self.cb(self);
+        var versionResponse = function(data) {
+          if (data[0].toString(16) == commands._version) {
+            self.version = data.toString().substring(1, data.length - 2);
+          }
+
+          // remove the version listener
+          self.socket.removeListener('data', versionResponse);
+
+          // callback with self
+          self.cb(self);
+        };
+
+        self.socket.on('data', versionResponse);
+
       } else {
 
         // callback with undefined
