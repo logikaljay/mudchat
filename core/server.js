@@ -9,7 +9,7 @@ var _server;
 
 var Room = require('./room');
 var Client = require('./client');
-var Protocol = require('./handshake');
+var Handshake = require('./handshake');
 var net = require('net');
 
 /**
@@ -47,26 +47,27 @@ module.exports.getInstance = function() {
  * @param  {int} port [the port to listen on]
  */
 function createServer(port) {
+  // lets handshake with the client
+  var self = this;
+  self.clients = [];
+
   var server = net.createServer(function(socket) {
 
     // emit a event about the connection
     process.emit('chat.client.connection', socket);
 
-    // lets handshake with the client
-    var self = this;
-    self.clients = [];
     var protocol = new Handshake(socket, function(handshake) {
       // emit an event about the handshake
-      process.emit('chat.client.handshake', client);
+      process.emit('chat.client.handshake', handshake);
 
       if (typeof client !== 'undefined') {
         var client = new Client(handshake.name, handshake.ip);
         client.socket = socket;
         client.port = handshake.port;
         client.protocol = handshake.protocol;
+        self.clients.push(client);
       }
     });
-
 
   }).listen(port, function() {
     process.emit('chat.server.listen', instance);

@@ -60,7 +60,7 @@ var Handshake = function(socket, cb) {
 
         // create the version as hex, TODO: get the version from some sort of config
         var name = "chatserver v0.0.1";
-        var hexName;
+        var hexName = "";
         for (var i = 0; i < name.length; i++) {
           hexName += ''+name.charCodeAt(i).toString(16);
         }
@@ -80,4 +80,4 @@ var Handshake = function(socket, cb) {
   });
 };
 
-module.exports = Protocol;
+module.exports = Handshake;

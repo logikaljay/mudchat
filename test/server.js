@@ -1,8 +1,4 @@
 // init core
-var Account = require('../core/account');
-var Client = require('../core/client');
-var Protocol = require('../core/protocol');
-var Room = require('../core/room');
 var Server = require('../core/server');
 
 process.on('chat.server.started', function(server) {
