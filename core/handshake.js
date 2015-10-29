@@ -78,7 +78,7 @@ class Handshake {
   }
 
   setVersion(version) {
-    // create the version as hex, TODO: get the version from some sort of config
+    // create the version as hex
     var hexVersion = "";
     for (var i = 0; i < version.length; i++) {
       hexVersion += ''+version.charCodeAt(i).toString(16);
@@ -90,15 +90,12 @@ class Handshake {
   }
 
   getVersion(data) {
-
-    console.log(this);
-
     if (data[0].toString(16) == commands._version) {
       this.version = data.toString().substring(1, data.length - 2);
     }
 
-    // remove the version listener
-    this.socket.removeListener('data', this.getVersion);
+    // remove all the listeners for 'data' on the socket as we don't want getVersion called over and over
+    this.socket.removeAllListeners('data');
 
     // callback with self
     this.cb(this);
