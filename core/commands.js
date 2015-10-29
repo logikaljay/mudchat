@@ -4,9 +4,15 @@ var fs = require('fs');
 var path = require('path');
 
 /**
+ * Commands object
+ * @constructor
+ */
+var Commands = {};
+
+/**
  * Load all the commands from ./commands directory
  */
-module.exports.load = function() {
+Commands.load = function() {
   var cmdsDir = path.join(__dirname, '../commands');
   var files = fs.readdirSync(cmdsDir);
 
@@ -24,7 +30,7 @@ module.exports.load = function() {
 /**
  * Init the commands and load them if not initalised
  */
-module.exports.init = function() {
+Commands.init = function() {
   // only if commands is undefined do we want to action the init
   if (typeof commands === undefined) {
     commands = [];
@@ -40,7 +46,7 @@ module.exports.init = function() {
  * @param  {Integer} level      min level for execution of the command
  * @param  {Function} command   the function that gets executed
  */
-module.exports.add = function(name, description, level, command) {
+Commands.add = function(name, description, level, command) {
   this.init();
 
   commands[name] = { name: name, description: description, level: level, exec: command };
@@ -51,7 +57,7 @@ module.exports.add = function(name, description, level, command) {
  * @param  {Client} client  the client that is executing the command
  * @param  {Array}  command the array of the command payload
  */
-module.exports.exec = function(client, command) {
+Commands.exec = function(client, command) {
   this.init();
 
   var name = command.shift();
@@ -68,8 +74,10 @@ module.exports.exec = function(client, command) {
  * Return all commands
  * @return {Array} array of commands loaded
  */
-module.exports.all = function() {
+Commands.all = function() {
   this.init();
 
   return commands;
 };
+
+module.exports = Commands;

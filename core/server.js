@@ -49,17 +49,19 @@ var Server = function(name, port) {
 
 /**
  * Get the server instance
- * @return {Server} [the server instance]
+ * @return {Server} the server instance
  */
-module.exports.getInstance = function() {
+Server.getInstance = function() {
   return instance;
 };
 
 /**
  * Create the socket
- * @param  {int} port [the port to listen on]
+ * @private
+ * @param  {int} port the port to listen on
+ * @todo Validate the user has an account before putting them in the room
  */
-function createServer(port, server) {
+var createServer = function(port, server) {
   // lets handshake with the client
   server.clients = [];
 
@@ -88,13 +90,14 @@ function createServer(port, server) {
   }).listen(port, function() {
     process.emit('chat.server.listen', instance);
   });
-}
+};
 
 /**
  * Process and execute a command sent by a user
+ * @private
  * @param  {Object} payload [the command data and client who sent it]
  */
-function processCommand(payload) {
+var processCommand = function(payload) {
   if (payload.client === undefined || payload.data === undefined) {
     return;
   }
@@ -104,6 +107,6 @@ function processCommand(payload) {
   var command = commandData[2].split(" ");
 
   Commands.exec(payload.client, command);
-}
+};
 
 module.exports = Server;

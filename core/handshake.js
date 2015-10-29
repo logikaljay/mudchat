@@ -9,6 +9,7 @@ var cb;
 /**
  * Handshake specific commands
  * @type {Object}
+ * @private
  */
 var commands = {
   _version: "13",
@@ -20,6 +21,8 @@ var commands = {
  * @constructor
  * @param  {Socket}   socket net socket
  * @param  {Function} cb     the callback
+ * @todo Get the chatserver's name from some sort of preferences file
+ * @todo Get the chatserver's version from some sort of preferences file
  */
 var Handshake = function(socket, cb) {
   this.socket = socket;

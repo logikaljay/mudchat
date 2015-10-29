@@ -52,7 +52,7 @@ Client.prototype.kill = function() {
 /**
  * Send a message to the client
  * @param  {String}   message the message to send
- * @param  {Boolean}} private if true, send a private message to the client
+ * @param  {Boolean} private if true, send a private message to the client
  */
 Client.prototype.send = function(message, private) {
   var hexMessage = "";
@@ -67,9 +67,10 @@ Client.prototype.send = function(message, private) {
 
 /**
  * Message received from the Client
+ * @private
  * @param  {Buffer} data The data that was received
  */
-function messageReceived(data) {
+var messageReceived = function(data) {
   var str = data.toString();
   var command = data[0].toString(16);
   var payload = {
