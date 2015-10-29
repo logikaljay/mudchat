@@ -17,6 +17,13 @@ var lastActivity;
 var socket;
 var self;
 
+/**
+ * Construct a new client
+ * @constructor
+ * @param  {String} name the name of the client
+ * @param  {String} ip   the ip address of the client
+ * @return {Client}      the client
+ */
 var Client = function(name, ip) {
   this.name = name;
   this.ip = ip;
@@ -24,6 +31,10 @@ var Client = function(name, ip) {
   return this;
 };
 
+/**
+ * Set the clients socket
+ * @param  {Socket} socket the socket the client is connected with
+ */
 Client.prototype.setSocket = function(socket) {
   this.socket = socket;
 
@@ -31,10 +42,18 @@ Client.prototype.setSocket = function(socket) {
   socket.on('data', messageReceived.bind(this));
 };
 
+/**
+ * Kill the clients connection
+ */
 Client.prototype.kill = function() {
   //this.socket.destroy();
 };
 
+/**
+ * Send a message to the client
+ * @param  {String}   message the message to send
+ * @param  {Boolean}} private if true, send a private message to the client
+ */
 Client.prototype.send = function(message, private) {
   var hexMessage = "";
   for (var i = 0; i < message.length; i++) {
@@ -46,6 +65,10 @@ Client.prototype.send = function(message, private) {
   this.socket.write(buf);
 };
 
+/**
+ * Message received from the Client
+ * @param  {Buffer} data The data that was received
+ */
 function messageReceived(data) {
   var str = data.toString();
   var command = data[0].toString(16);

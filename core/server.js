@@ -14,12 +14,13 @@ var Commands = require('./commands');
 var net = require('net');
 
 /**
- * Constructor
- * @param  {string} name  [the name of the chatserver (defaults to 'chatserver')]
- * @param  {int} port     [the port to listen on (defaults to 4050)]
- * @return {Server}       [the server object]
+ * Server contructor
+ * @constructor
+ * @param  {string} name  the name of the chatserver (defaults to 'chatserver')
+ * @param  {int} port     the port to listen on (defaults to 4050)
+ * @return {Server}       the server object
  */
-module.exports = function(name, port) {
+var Server = function(name, port) {
   instance = this;
   this.name = name || 'chatserver';
   this.port = port || 4050;
@@ -46,6 +47,10 @@ module.exports = function(name, port) {
   return this;
 };
 
+/**
+ * Get the server instance
+ * @return {Server} [the server instance]
+ */
 module.exports.getInstance = function() {
   return instance;
 };
@@ -85,6 +90,10 @@ function createServer(port, server) {
   });
 }
 
+/**
+ * Process and execute a command sent by a user
+ * @param  {Object} payload [the command data and client who sent it]
+ */
 function processCommand(payload) {
   if (payload.client === undefined || payload.data === undefined) {
     return;
@@ -96,3 +105,5 @@ function processCommand(payload) {
 
   Commands.exec(payload.client, command);
 }
+
+module.exports = Server;

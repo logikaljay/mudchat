@@ -10,6 +10,14 @@ var listeners = [];
 var util = require('util');
 var Server = require('./server');
 
+/**
+ * Room constructor
+ * @constructor
+ * @param  {String} roomName  name of the room
+ * @param  {String} password  password for the room
+ * @param  {Integer} minLevel minimum level for the room
+ * @return {Room}             the room object
+ */
 var Room = function(roomName, password, minLevel) {
   this.name = roomName;
   this.password = password;
@@ -31,6 +39,9 @@ var Room = function(roomName, password, minLevel) {
   return this;
 };
 
+/**
+ * Destroy a room
+ */
 Room.prototype.destroy = function() {
   // get the chat server
   var self = this;
@@ -47,6 +58,10 @@ Room.prototype.destroy = function() {
   // because this is no longer referenced, it should get GC'd
 };
 
+/**
+ * Send a message to all clients in a room
+ * @param  {Object} payload the message to send, and the client it was sent from
+ */
 Room.prototype.send = function(payload) {
   for (var i in this.clients) {
     var client = this.clients[i];
@@ -61,6 +76,11 @@ Room.prototype.send = function(payload) {
   }
 };
 
+/**
+ * Join a room
+ * @param  {Client}  client the client to put in the room
+ * @param  {Boolean} silent if true, don't advertise it to the room
+ */
 Room.prototype.join = function(client, silent) {
   this.clients.push(client);
   client.room = this;
@@ -71,6 +91,11 @@ Room.prototype.join = function(client, silent) {
   client.send(util.format("You have joined the '%s' room", this.name));
 };
 
+/**
+ * Leave a room
+ * @param  {Object}  client the client to leave the room
+ * @param  {Boolean} silent if true, don't advertise it to the room
+ */
 Room.prototype.leave = function(client, silent) {
   this.clients = this.clients.filter(function(c) {
     return client.name !== c.name;
@@ -84,6 +109,11 @@ Room.prototype.leave = function(client, silent) {
   // client.send(util.format("You have left the '%s' room", this.name));
 };
 
+/**
+ * Get the room
+ * @param  {String} name  the name of the room to get
+ * @return {Room}         the room object
+ */
 Room.prototype.get = function(name) {
   return Server.getInstance().rooms[name];
 };

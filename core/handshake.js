@@ -17,8 +17,9 @@ var commands = {
 
 /**
  * Handshake constructor
- * @param  {Socket}   socket [net socket]
- * @param  {Function} cb     [the callback]
+ * @constructor
+ * @param  {Socket}   socket net socket
+ * @param  {Function} cb     the callback
  */
 var Handshake = function(socket, cb) {
   this.socket = socket;
