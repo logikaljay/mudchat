@@ -1,8 +1,11 @@
+"use strict";
+
 var Commands = require('../core/commands');
+var Command = require('../core/command');
 var Server = require('../core/server');
 var Room = require('../core/room');
 
-Commands.add('join', 'join a [room]', 0, function(client, name, cmd) {
+new Command('join', 'join a [room]', 0, (client, name, cmd) => {
   var commands = Commands.all();
   var response;
 
@@ -10,8 +13,6 @@ Commands.add('join', 'join a [room]', 0, function(client, name, cmd) {
     Commands.exec(client, ['help', 'join']);
     return;
   }
-
-  console.log(Server);
 
   var room = Server.getInstance().rooms[cmd[0]];
   if (room === undefined) {

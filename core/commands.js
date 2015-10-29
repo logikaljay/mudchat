@@ -16,10 +16,10 @@ class Commands {
    * @param {Integer} level      The minimum level required to execute the command
    * @param {Function} exec      The function to be executed
    */
-  static add(name, description, level, exec) {
+  static add(command) {
     this.init();
 
-    commands[name] = { name, description, level, exec };
+    commands[command.name] = command;
   }
 
   /**
@@ -40,12 +40,11 @@ class Commands {
   static exec(client, command) {
     this.init();
 
+    // get the name of the command by shifting the array
     var name = command.shift();
 
-    console.log("%s sent command: %s", client.name, name);
-    //console.log(client);
+    // make sure our command isnt undefined
     if (commands[name] !== undefined) {
-      //arguments.shift();
       commands[name].exec(client, name, command);
     }
   }
