@@ -10,6 +10,7 @@ var _server;
 var Room = require('./room');
 var Client = require('./client');
 var Handshake = require('./handshake');
+var Commands = require('./commands');
 var net = require('net');
 
 /**
@@ -27,13 +28,20 @@ module.exports = function(name, port) {
   this.clients = [];
   this.rooms = [];
 
+  // load our commands
+  Commands.load();
+
   // create the main room
-  this.rooms.push(new Room("main", null, 0));
+  this.rooms.main = new Room("main", null, 0);
 
   // create the net socket
-  this._server = createServer(port);
+  this._server = createServer(port, this);
 
+  // emit the chat server started
   process.emit('chat.server.started', this);
+
+  // listen for commands coming from users
+  process.on('chat.client.message.command', processCommand);
 
   return this;
 };
@@ -46,12 +54,11 @@ module.exports.getInstance = function() {
  * Create the socket
  * @param  {int} port [the port to listen on]
  */
-function createServer(port) {
+function createServer(port, server) {
   // lets handshake with the client
-  var self = this;
-  self.clients = [];
+  server.clients = [];
 
-  var server = net.createServer(function(socket) {
+  return net.createServer(function(socket) {
 
     // emit a event about the connection
     process.emit('chat.client.connection', socket);
@@ -64,14 +71,28 @@ function createServer(port) {
         var client = new Client(handshake.name, handshake.ip);
         client.port = handshake.port;
         client.protocol = handshake.protocol;
-        self.clients.push(client);
         client.setSocket(socket);
+        server.clients.push(client);
+        client.room = server.rooms.main;
+
+        // put the new client in the main room - TODO: check validation
+        server.rooms.main.join(client, true);
       }
     });
 
   }).listen(port, function() {
     process.emit('chat.server.listen', instance);
   });
+}
 
-  return server;
+function processCommand(payload) {
+  if (payload.client === undefined || payload.data === undefined) {
+    return;
+  }
+
+  var commandData = payload.data.match(/(.*) chats to you, '(.*)'/i);
+  var clientName = commandData[1];
+  var command = commandData[2].split(" ");
+
+  Commands.exec(payload.client, command);
 }

@@ -17,4 +17,8 @@ process.on('chat.room.create', function(room) {
   console.log("Room created: %s", room.name);
 });
 
+process.on('chat.commands.loading', function(data) {
+  console.log('Loading %s commands', data.length);
+});
+
 var server = new Server('chatserver', 4050);

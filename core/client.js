@@ -15,6 +15,7 @@ var gagged;
 var gagTime;
 var lastActivity;
 var socket;
+var self;
 
 var Client = function(name, ip) {
   this.name = name;
@@ -25,20 +26,33 @@ var Client = function(name, ip) {
 
 Client.prototype.setSocket = function(socket) {
   this.socket = socket;
-  console.log('setting socket!');
-  console.log(this.socket);
-  socket.on('data', messageReceived);
+
+  // listen for all commands
+  socket.on('data', messageReceived.bind(this));
 };
 
 Client.prototype.kill = function() {
   //this.socket.destroy();
 };
 
+Client.prototype.send = function(message, private) {
+  var hexMessage = "";
+  for (var i = 0; i < message.length; i++) {
+    hexMessage += ''+message.charCodeAt(i).toString(16);
+  }
+
+  // send the message
+  var buf = new Buffer((private ? "05" : "04") + hexMessage + "FF", 'hex');
+  this.socket.write(buf);
+};
+
 function messageReceived(data) {
   var str = data.toString();
-
   var command = data[0].toString(16);
-  var payload = data.toString().substring(1, data.length - 2);
+  var payload = {
+    client: this,
+    data: data.toString().substring(2, data.length - 2)
+  };
 
   switch (command) {
     case "13":
@@ -46,9 +60,11 @@ function messageReceived(data) {
       break;
     case "4":
       // message to all = 4: \nTinTin chats to everyone, 'hi'
+      process.emit('chat.client.message.room', payload);
       break;
     case "5":
       // private message = 5: \nTinTin chats to you, 'hi'
+      process.emit('chat.client.message.command', payload);
       break;
     case "1a":
       // ping request = 1a: 1446068720587471
@@ -72,9 +88,6 @@ function messageReceived(data) {
       // cancel file request
       break;
   }
-
-  // figure out what the message is by the first byte
-  console.log("MessageEvent: %s: %s", data[0].toString(16), data.toString().substring(1));
 }
 
 module.exports = Client;
