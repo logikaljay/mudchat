@@ -51,6 +51,10 @@ class Handshake {
     });
   }
 
+  /**
+   * Set the protocol of the handshake
+   * @param {String} protocolStr colon and new line delimitered string of the handshake data
+   */
   setProtocol(protocolStr) {
     // split the protocol string by the :
     var result = protocolStr.split(':', 2);
@@ -73,10 +77,18 @@ class Handshake {
     this.port = this.socket.remotePort;
   }
 
+  /**
+   * Send the chat servers name to the client
+   * @param {String} name the name of the chat server
+   */
   setName(name) {
     this.socket.write(util.format('YES:%s\n', name));
   }
 
+  /**
+   * Send the chat servers version to the client
+   * @param {String} version the version of the chatserver
+   */
   setVersion(version) {
     // create the version as hex
     var hexVersion = "";
@@ -89,6 +101,10 @@ class Handshake {
     this.socket.write(buf);
   }
 
+  /**
+   * Get the chat client's version
+   * @param  {String} data the data received over the socket
+   */
   getVersion(data) {
     if (data[0].toString(16) == commands._version) {
       this.version = data.toString().substring(1, data.length - 2);
