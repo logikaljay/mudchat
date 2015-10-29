@@ -1,9 +1,5 @@
 "use strict";
 
-var version;
-var socket;
-var cb;
-
 var util = require('util');
 
 /**
@@ -17,17 +13,22 @@ var commands = {
 };
 
 /**
- * Handshake constructor
- * @constructor
- * @param  {Socket}   socket net socket
- * @param  {Function} cb     the callback
- * @todo Get the chatserver's name from some sort of preferences file
- * @todo Get the chatserver's version from some sort of preferences file
+ * Coordinate the connection of a new chat client to the server.
+ * Different chat clients send the information differently, so far this chat server supports: TinTin++, mudjs, MudMaster, MudMaster 2k6, ZChat
  */
 class Handshake {
-  constructor(socket, cb) {
+
+  /**
+   * Handshake constructor
+   * Constructs a new handshake object to process new connections to the chatserver
+   * @param  {Socket}   socket    nodejs net socket object
+   * @param  {Function} callback  the callback that will be processed once the handshake has completed
+   * @todo Get the chatserver's name from some sort of preferences file
+   * @todo Get the chatserver's version from some sort of preferences file
+   */
+  constructor(socket, callback) {
     this.socket = socket;
-    this.cb = cb;
+    this.cb = callback;
 
     socket.on('data', data => {
       var str = data.toString();
