@@ -1,10 +1,10 @@
-var name;
-var ip;
-var port;
-var protocol;
+"use strict";
+
 var version;
 var socket;
 var cb;
+
+var util = require('util');
 
 /**
  * Handshake specific commands
@@ -24,77 +24,85 @@ var commands = {
  * @todo Get the chatserver's name from some sort of preferences file
  * @todo Get the chatserver's version from some sort of preferences file
  */
-var Handshake = function(socket, cb) {
-  this.socket = socket;
-  this.cb = cb;
-  var self = this;
-  socket.on('data', function(data) {
-    var str = data.toString();
-    var nameAndIp = [];
+class Handshake {
+  constructor(socket, cb) {
+    this.socket = socket;
+    this.cb = cb;
 
-    // check if our handshake data contains the expected :
-    if (str.indexOf(':') > -1) {
+    socket.on('data', data => {
+      var str = data.toString();
+      var nameAndIp = [];
 
-      // split the string by the :
-      var result = str.split(':', 2);
+      // check if our handshake data contains the expected :
+      if (str.indexOf(':') > -1) {
 
-      // check the first part of the string to get the protocol
-      if (result[0] == 'CHAT') {
-        // MudMaster protocol
-        nameAndIp = result[1].split('\n');
-        self.protocol = 'mudmaster';
-      } else if (result[0] == 'ZCHAT') {
-        // ZChat protocol
-        nameAndIp = result[1].split('\n');
-        self.protocol = 'zchat';
-      } else {
-        // Unknown protocol
-        self.protocol = 'unknown';
-        return self;
+        // set the connection's protocol information
+        this.setProtocol(str);
+
+        // send the chat name of the server to the client
+        this.setName('chatserver');
+
+        // send the version of the chatserver to the client
+        this.setVersion('chatserver v0.0.1');
+
+        // setup the version response listener to get the client's version
+        this.socket.on('data', data => this.getVersion(data));
       }
+    });
+  }
 
-      // make sure nameAndIp is valid before progressing
-      if (nameAndIp.length > 0) {
-        // push the new connection to our list of clients
-        self.name = nameAndIp[0];
-        self.ip = self.socket.remoteAddress;
-        self.port = self.socket.remotePort;
+  setProtocol(protocolStr) {
+    // split the protocol string by the :
+    var result = protocolStr.split(':', 2);
 
-        // send the name, TODO: get the name from some sort of config
-        self.socket.write('YES:chatserver\n');
-
-        // create the version as hex, TODO: get the version from some sort of config
-        var name = "chatserver v0.0.1";
-        var hexName = "";
-        for (var i = 0; i < name.length; i++) {
-          hexName += ''+name.charCodeAt(i).toString(16);
-        }
-
-        // send the version
-        var version = new Buffer(commands._version + hexName + commands._end, 'hex');
-        self.socket.write(version);
-
-        var versionResponse = function(data) {
-          if (data[0].toString(16) == commands._version) {
-            self.version = data.toString().substring(1, data.length - 2);
-          }
-
-          // remove the version listener
-          self.socket.removeListener('data', versionResponse);
-
-          // callback with self
-          self.cb(self);
-        };
-
-        self.socket.on('data', versionResponse);
-
-      } else {
-
-        // callback with undefined
-        self.cb();
-      }
+    // check the first part of the result to get the protocol
+    if (result[0] == 'CHAT') {
+      // MudMaster protocol
+      this.protocol = 'mudmaster';
+    } else if (result[0] == 'ZCHAT') {
+      // ZChat protocol
+      this.protocol = 'zchat';
+    } else {
+      // Unknown protocol
+      this.protocol = 'unknown';
     }
-  });
-};
+
+    // get the name and ip from the second part of the result
+    this.name = result[1].split('\n')[0];
+    this.ip = this.socket.remoteAddress;
+    this.port = this.socket.remotePort;
+  }
+
+  setName(name) {
+    this.socket.write(util.format('YES:%s\n', name));
+  }
+
+  setVersion(version) {
+    // create the version as hex, TODO: get the version from some sort of config
+    var hexVersion = "";
+    for (var i = 0; i < version.length; i++) {
+      hexVersion += ''+version.charCodeAt(i).toString(16);
+    }
+
+    // send the version
+    var buf = new Buffer(commands._version + hexVersion + commands._end, 'hex');
+    this.socket.write(buf);
+  }
+
+  getVersion(data) {
+
+    console.log(this);
+
+    if (data[0].toString(16) == commands._version) {
+      this.version = data.toString().substring(1, data.length - 2);
+    }
+
+    // remove the version listener
+    this.socket.removeListener('data', this.getVersion);
+
+    // callback with self
+    this.cb(this);
+  }
+}
 
 module.exports = Handshake;
