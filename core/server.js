@@ -38,6 +38,8 @@ class Server {
 
     // listen for commands coming from users
     process.on('chat.client.message.command', this.processCommand);
+
+    return this;
   }
 
   /**
@@ -72,10 +74,21 @@ class Server {
           client.port = handshake.port;
           client.protocol = handshake.protocol;
           client.setSocket(socket);
-          this.clients.push(client);
 
-          // put the new client in the main room - TODO: check validation
-          this.rooms.main.join(client, true);
+          // TODO: Check if user is authenticated
+          if (true) {
+            // check if client.name is already in this.clients
+            if (Object.keys(this.clients).indexOf(client.name) > -1) {
+              console.log("%s is already a client of mine - killing them.", client.name);
+              this.clients[client.name].kill("Your connection has been closed because someone else logged on with your username.");
+            }
+
+            // add the client to the list
+            this.clients[client.name] = client;
+
+            // put the new client in the main room - TODO: check validation
+            this.rooms.main.join(client, true);
+          }
         }
       });
 

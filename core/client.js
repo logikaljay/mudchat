@@ -1,5 +1,7 @@
 "use strict";
 
+var util = require('util');
+
 class Client {
   /**
    * Construct a new client
@@ -25,8 +27,21 @@ class Client {
   /**
    * Kill the client's connection
    */
-  kill() {
+  kill(msg) {
+    var Server = require('./server');
+    var clients = Server.getInstance().clients;
+
+    if (msg) {
+      this.send(msg, true);
+    }
+
+    // destroy the socket
     this.socket.destroy();
+
+    // remove the client from the list
+    if (clients[this.name] !== undefined) {
+      delete clients[this.name];
+    }
   }
 
   /**
@@ -35,14 +50,20 @@ class Client {
    * @param  {Boolean} isPrivate if true, send a private message to the client
    */
   send(message, isPrivate) {
+    this.sendRaw((isPrivate ? "05" : "04"), message);
+  }
+
+  sendRaw(cmd, message) {
     var hexMessage = "";
     for (var i = 0; i < message.length; i++) {
       hexMessage += ''+message.charCodeAt(i).toString(16);
     }
 
-    // send the message
-    var buf = new Buffer((isPrivate ? "05" : "04") + hexMessage + "FF", 'hex');
-    this.socket.write(buf);
+    var buf = new Buffer(cmd + hexMessage + "FF", 'hex');
+
+    if (this.socket.writable) {
+      this.socket.write(buf);
+    }
   }
 
   /**
@@ -54,7 +75,7 @@ class Client {
     var command = data[0].toString(16);
     var payload = {
       client: this,
-      data: data.toString().substring(1, data.length - 2)
+      data: data.toString().substring(1, data.length - 1)
     };
 
     this.handleMessage(command,payload);
@@ -80,10 +101,11 @@ class Client {
         break;
       case "1a":
         // ping request = 1a: 1446068720587471
-        this.pingResponse(payload);
+        this.handlePingResponse(payload);
         break;
       case "1":
         // client name change = 1: bob
+        this.handleNameChange(payload);
         break;
       case "1c":
         // peek connections = 1c:
@@ -106,13 +128,30 @@ class Client {
     }
   }
 
-  pingResponse(payload) {
-    var hexMessage = "";
-    for (var i = 0; i < "1".length; i++) {
-      hexMessage += "1".charCodeAt(i).toString(16);
+  handlePingResponse(payload) {
+    this.sendRaw('1B', payload.data);
+  }
+
+  handleNameChange(payload) {
+    var Server = require('./server');
+    var clients = Server.getInstance().clients;
+    var newName = payload.data.trim();
+
+    // firstly - check if the name doesn't already exist
+    if (Object.keys(clients).indexOf(newName) > -1) {
+      this.kill(util.format("The name '%s' is already in use - Impersonation attempt foiled!", newName));
+      return;
+    } else {
+      // change the clients name in lists
+      delete clients[this.name];
+      clients[newName] = this;
+
+      // send a message to the clients Room
+      this.room.send({ client: this, data: util.format('%s is now known as %s', this.name, newName) });
+
+      // change the clients name
+      this.name = newName;
     }
-    var response = new Buffer('1B' + hexMessage + 'FF', 'hex');
-    this.socket.write(response);
   }
 }
 
