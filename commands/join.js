@@ -11,6 +11,8 @@ Commands.add('join', 'join a [room]', 0, function(client, name, cmd) {
     return;
   }
 
+  console.log(Server);
+
   var room = Server.getInstance().rooms[cmd[0]];
   if (room === undefined) {
     // create the room

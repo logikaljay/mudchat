@@ -82,8 +82,12 @@ Room.prototype.send = function(payload) {
  * @param  {Boolean} silent if true, don't advertise it to the room
  */
 Room.prototype.join = function(client, silent) {
+  // add the client to this room's list of clients
   this.clients.push(client);
+
+  // set the client's room
   client.room = this;
+
   if (silent === undefined) {
     this.send({ client: client, data: util.format('%s has joined the room', client.name) });
   }
@@ -97,6 +101,7 @@ Room.prototype.join = function(client, silent) {
  * @param  {Boolean} silent if true, don't advertise it to the room
  */
 Room.prototype.leave = function(client, silent) {
+  // remove the client from this room's list of clients
   this.clients = this.clients.filter(function(c) {
     return client.name !== c.name;
   });
