@@ -11,10 +11,7 @@ var path = require('path');
 class Commands {
   /**
    * Add a command into the chat servers list
-   * @param {String} name        The name of the command used for invocation
-   * @param {String} description The description of the command used for help messages
-   * @param {Integer} level      The minimum level required to execute the command
-   * @param {Function} exec      The function to be executed
+   * @param {Command} command the Command to add
    */
   static add(command) {
     this.init();
