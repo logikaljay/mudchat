@@ -54,7 +54,7 @@ class Client {
     var command = data[0].toString(16);
     var payload = {
       client: this,
-      data: data.toString().substring(2, data.length - 2)
+      data: data.toString().substring(1, data.length - 2)
     };
 
     this.handleMessage(command,payload);
@@ -80,6 +80,7 @@ class Client {
         break;
       case "1a":
         // ping request = 1a: 1446068720587471
+        this.pingResponse(payload);
         break;
       case "1":
         // client name change = 1: bob
@@ -103,6 +104,15 @@ class Client {
         // unrecognised commands
         break;
     }
+  }
+
+  pingResponse(payload) {
+    var hexMessage = "";
+    for (var i = 0; i < "1".length; i++) {
+      hexMessage += "1".charCodeAt(i).toString(16);
+    }
+    var response = new Buffer('1B' + hexMessage + 'FF', 'hex');
+    this.socket.write(response);
   }
 }
 
