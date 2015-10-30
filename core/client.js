@@ -64,7 +64,6 @@ class Client {
   sendRaw(cmd, message) {
     var hexMessage = "";
     for (var i = 0; i < message.length; i++) {
-
       // intercept new lines
       if (message.charCodeAt(i) == '10') {
         hexMessage += '0a';
