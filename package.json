@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "moment": "^2.10.6"
+    "moment": "^2.10.6",
+    "printf": "^0.2.3"
   }
 }
