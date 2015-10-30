@@ -2,6 +2,8 @@
 
 var util = require('util');
 
+var MessageEvent = require('./messageevent');
+
 class Client {
   /**
    * Construct a new client
@@ -46,17 +48,29 @@ class Client {
 
   /**
    * Send a message to the client
-   * @param  {String}   message the message to send
-   * @param  {Boolean} isPrivate if true, send a private message to the client
+   * @param  {MessageEvent/String}   MessageEvent  the MessageEvent to send
+   * @param  {Boolean}        isPrivate     if true, send a private message to the client
    */
   send(message, isPrivate) {
-    this.sendRaw((isPrivate ? "05" : "04"), message);
+    if (message instanceof MessageEvent) {
+      this.sendRaw(message.command, message.data);
+      this.lastEvent = message;
+    } else {
+      // message was a string - send the string
+      this.sendRaw((isPrivate ? "05" : "04"), message);
+    }
   }
 
   sendRaw(cmd, message) {
     var hexMessage = "";
     for (var i = 0; i < message.length; i++) {
-      hexMessage += ''+message.charCodeAt(i).toString(16);
+
+      // intercept new lines
+      if (message.charCodeAt(i) == '10') {
+        hexMessage += '0a';
+      } else {
+        hexMessage += ''+message.charCodeAt(i).toString(16);
+      }
     }
 
     var buf = new Buffer(cmd + hexMessage + "FF", 'hex');
@@ -73,39 +87,41 @@ class Client {
   messageReceived(data) {
     var str = data.toString();
     var command = data[0].toString(16);
-    var payload = {
-      client: this,
-      data: data.toString().substring(1, data.length - 1)
-    };
 
-    this.handleMessage(command,payload);
+    // create a message event
+    var message = new MessageEvent(command, this, data.toString().substring(1, data.length - 1));
+
+    // set the last seen for the client
+    this.lastEvent = message;
+
+    // handle the message
+    this.handleMessage(message);
   }
 
   /**
    * Handle the message that was received
-   * @param  {String} command The hex byte command received from the client's chat software
-   * @param  {Object} payload The payload contains the client and also the message data stripped of any protocol information
+   * @param  {MessageEvent} The MessageEvent that is to be handled
    */
-  handleMessage(command, payload) {
-    switch (command) {
+  handleMessage(message) {
+    switch (message.command) {
       case "13":
         // some clients send through the version twice (I'm looking at you TinTin++)
         break;
       case "4":
         // message to all = 4: \nTinTin chats to everyone, 'hi'
-        process.emit('chat.client.message.room', payload);
+        process.emit('chat.client.message.room', message);
         break;
       case "5":
         // private message = 5: \nTinTin chats to you, 'hi'
-        process.emit('chat.client.message.command', payload);
+        this.handleCommand(message);
         break;
       case "1a":
         // ping request = 1a: 1446068720587471
-        this.handlePingResponse(payload);
+        this.handlePingResponse(message);
         break;
       case "1":
         // client name change = 1: bob
-        this.handleNameChange(payload);
+        this.handleNameChange(message);
         break;
       case "1c":
         // peek connections = 1c:
@@ -128,14 +144,32 @@ class Client {
     }
   }
 
-  handlePingResponse(payload) {
-    this.sendRaw('1B', payload.data);
+  /**
+   * Process and execute a command sent by a user
+   * @private
+   * @param  {Object} payload [the command data and client who sent it]
+   */
+  handleCommand(message) {
+    if (message.client === undefined || message.data === undefined) {
+      return;
+    }
+
+    var commandData = message.data.match(/(.*) chats to you, '(.*)'/i);
+    var clientName = commandData[1];
+    var command = commandData[2].split(" ");
+
+    var Commands = require('./commands');
+    Commands.exec(message.client, command);
   }
 
-  handleNameChange(payload) {
+  handlePingResponse(message) {
+    this.sendRaw('1B', message.data);
+  }
+
+  handleNameChange(message) {
     var Server = require('./server');
     var clients = Server.getInstance().clients;
-    var newName = payload.data.trim();
+    var newName = message.data.trim();
 
     // firstly - check if the name doesn't already exist
     if (Object.keys(clients).indexOf(newName) > -1) {

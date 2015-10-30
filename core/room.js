@@ -10,7 +10,9 @@ var clients = [];
 var listeners = [];
 
 var util = require('util');
+
 var Server = require('./server');
+var MessageEvent = require('./messageevent');
 
 /**
  * The room class handles the creation, joining, leaving and all messages posted to rooms
@@ -93,7 +95,7 @@ class Room {
       this.send({ client: client, data: util.format('%s has joined the room', client.name) });
     }
 
-    client.send(util.format("You have joined the '%s' room", this.name));
+    client.send(new MessageEvent('05', client, util.format("You have joined the '%s' room", this.name)));
   }
 
   /**

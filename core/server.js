@@ -36,9 +36,6 @@ class Server {
     // emit that the chat server has started
     process.emit('chat.server.started', this);
 
-    // listen for commands coming from users
-    process.on('chat.client.message.command', this.processCommand);
-
     return this;
   }
 
@@ -73,6 +70,8 @@ class Server {
           var client = new Client(handshake.name, handshake.ip);
           client.port = handshake.port;
           client.protocol = handshake.protocol;
+          client.version = handshake.version;
+          client.connected = new Date();
           client.setSocket(socket);
 
           // TODO: Check if user is authenticated
@@ -95,23 +94,6 @@ class Server {
     }).listen(port, () => {
       process.emit('chat.server.listen', instance);
     });
-  }
-
-  /**
-   * Process and execute a command sent by a user
-   * @private
-   * @param  {Object} payload [the command data and client who sent it]
-   */
-  processCommand(payload) {
-    if (payload.client === undefined || payload.data === undefined) {
-      return;
-    }
-
-    var commandData = payload.data.match(/(.*) chats to you, '(.*)'/i);
-    var clientName = commandData[1];
-    var command = commandData[2].split(" ");
-
-    Commands.exec(payload.client, command);
   }
 }
 
