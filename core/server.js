@@ -89,7 +89,7 @@ class Server {
             this.userAuthenticated(client, socket);
           } else {
             // request that the client authenticate
-            Account.challenge(socket, t => {
+            this.challengeAuthentication(socket, t => {
               socket.on('data', data => {
                 this.processAuthentication(client, socket, data, t);
               });
@@ -103,6 +103,34 @@ class Server {
     });
   }
 
+  /**
+   * Challenge the user for their passwordMatch
+   * @param  {Socket}   socket   the socket of the user that is being challenged
+   * @param  {Function} callback a function to call once the user has been challenged
+   */
+  challengeAuthentication(socket, callback) {
+    var message = "You have 30 seconds to message me your password.";
+    var hexMessage = "";
+    for (var i = 0; i < message.length; i++) {
+      hexMessage += message.charCodeAt(i).toString(16);
+    }
+
+    var buf = new Buffer('05' + hexMessage + 'FF', 'hex');
+    socket.write(buf);
+    var t = setTimeout(() => {
+      socket.destroy();
+    }, 5 * 1000);
+
+    callback(t);
+  }
+
+  /**
+   * Process the connections authentication
+   * @param  {Client} client the client that is being challenged
+   * @param  {socket} socket the socket that the client has connected with
+   * @param  {Buffer} data   The buffer of data that was sent by the Client
+   * @param  {timer} timer  the timer which will kill the clients connection if they take too long
+   */
   processAuthentication(client, socket, data, timer) {
     // make sure that the message we received was a private message
     if (data[0].toString(16) == "5") {
@@ -122,6 +150,12 @@ class Server {
     }
   }
 
+  /**
+   * User authenticated, log them on, add them to the room, set lastLogin times etc.
+   * @param  {Client} client the client that has logged on
+   * @param  {Socket} socket The client's socket used for writing/reading
+   * @param  {Timer} timer  the timer that is going to kill the user - can be null if the user was logged on by their IP Address and not challenged for a password
+   */
   userAuthenticated(client, socket, timer) {
     // invalidate the timer if it was passed
     if (timer !== undefined) {

@@ -5,7 +5,17 @@ var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
 
+/**
+ * Account class used for all account creations, password related functionality
+ */
 class Account {
+  /**
+   * Construct a new Account object from either an existing account or create a new account
+   * @param  {string} name      the name of the user's account
+   * @param  {string} password  the password of the user's account - if undefined, load the account
+   * @param  {int} level        the level of the users account
+   * @return {Account}          the Account object
+   */
   constructor(name, password, level) {
     // check if we are loading an account, or creating an account
     if (password === undefined) {
@@ -36,10 +46,19 @@ class Account {
     }
   }
 
+  /**
+   * Check if the account exists
+   * @param  {string} name the name of the account to check
+   * @return {Boolean}      true if the user account exists
+   */
   static exists(name) {
      return fs.existsSync(path.join(Account.getPath(name)));
   }
 
+  /**
+   * Get the number of accounts
+   * @return {int} number of accounts that exist
+   */
   static numAccounts() {
     return fs.readdirSync(path.join(Account.getPath(), '..')).length;
   }
@@ -53,14 +72,29 @@ class Account {
     return path.join(accountsPath, name + ".json");
   }
 
+  /**
+   * Generate a random base64 encoded salt
+   * @return {string} base64 random string
+   */
   static generateSalt() {
     return crypto.randomBytes(16).toString('base64');
   }
 
+  /**
+   * Hash the a password using salt
+   * @param  {string} salt     the salt to use to generate the Hash
+   * @param  {string} password the plain text password to Hash
+   * @return {string}          the hash of the salt + password
+   */
   static hashPassword(salt, password) {
     return crypto.createHash('sha512').update(salt+password).digest('hex');
   }
 
+  /**
+   * Load an account
+   * @param  {string} name the name of the account to load
+   * @return {Object}      the JSON parsed object of their account
+   */
   static load(name) {
     if (fs.existsSync(Account.getPath(name))) {
       var userStr = fs.readFileSync(Account.getPath(name));
@@ -70,30 +104,27 @@ class Account {
     }
   }
 
-  static challenge(socket, callback) {
-    var message = "You have 30 seconds to message me your password.";
-    var hexMessage = "";
-    for (var i = 0; i < message.length; i++) {
-      hexMessage += message.charCodeAt(i).toString(16);
-    }
-
-    var buf = new Buffer('05' + hexMessage + 'FF', 'hex');
-    socket.write(buf);
-    var t = setTimeout(() => {
-      socket.destroy();
-    }, 5 * 1000);
-
-    callback(t);
-  }
-
+  /**
+   * Save the user account
+   */
   save() {
     fs.writeFileSync(Account.getPath(this.name), JSON.stringify(this), 'utf8');
   }
 
+  /**
+   * Validate the plain text password against the stored hash
+   * @param  {string} password the plain text password to test
+   * @return {Boolean}          true if the plain account salt + plain text password equals the stored password hash
+   */
   validate(password) {
     return Account.hashPassword(this.salt, password) === this.password;
   }
 
+  /**
+   * Check if the account knows about the IP address
+   * @param  {string}  ip the ip address
+   * @return {Boolean}    true if the client knows about the ip address
+   */
   hasIPAddress(ip) {
     if (this.knownAddresses === undefined) {
       this.knownAddresses = [];
@@ -103,6 +134,11 @@ class Account {
     }
   }
 
+  /**
+   * Update the Account setting the date and adding the ip address
+   * @param  {Date} date the date that the user has connected
+   * @param  {string} ip   the IP address of the connected user
+   */
   userLoggedOn(date, ip) {
     if (!this.hasIPAddress(ip)) {
       this.knownAddresses.push(ip);
