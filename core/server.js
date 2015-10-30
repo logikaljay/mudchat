@@ -4,6 +4,7 @@ var Room = require('./room');
 var Client = require('./client');
 var Handshake = require('./handshake');
 var Commands = require('./commands');
+var Account = require('./account');
 var net = require('net');
 
 var instance;
@@ -72,21 +73,27 @@ class Server {
           client.protocol = handshake.protocol;
           client.version = handshake.version;
           client.connected = new Date();
-          client.setSocket(socket);
 
-          // TODO: Check if user is authenticated
-          if (true) {
-            // check if client.name is already in this.clients
-            if (Object.keys(this.clients).indexOf(client.name) > -1) {
-              console.log("%s is already a client of mine - killing them.", client.name);
-              this.clients[client.name].kill("Your connection has been closed because someone else logged on with your username.");
-            }
+          // kill if the user doesn't have an account
+          if (!Account.exists(client.name)) {
+            client.socket = socket;
+            client.kill("You do not have an account on this chatserver");
+            return;
+          }
 
-            // add the client to the list
-            this.clients[client.name] = client;
+          // load and set their account
+          client.account = new Account(client.name);
 
-            // put the new client in the main room - TODO: check validation
-            this.rooms.main.join(client, true);
+          // check if the account has the client's IP addr as a knownAddresses
+          if (client.account.hasIPAddress(client.ip)) {
+            this.userAuthenticated(client, socket);
+          } else {
+            // request that the client authenticate
+            Account.challenge(socket, t => {
+              socket.on('data', data => {
+                this.processAuthentication(client, socket, data, t);
+              });
+            });
           }
         }
       });
@@ -94,6 +101,50 @@ class Server {
     }).listen(port, () => {
       process.emit('chat.server.listen', instance);
     });
+  }
+
+  processAuthentication(client, socket, data, timer) {
+    // make sure that the message we received was a private message
+    if (data[0].toString(16) == "5") {
+
+      // get the password
+      var messageData = data.toString().substring(1, data.length - 2);
+      var passwordMatch = messageData.match(/(.*) chats to you, '(.*)'/i);
+      var password = passwordMatch[2];
+
+      // validate the password
+      if (client.account.validate(password)) {
+        this.userAuthenticated(client, socket, timer);
+      } else {
+        // password incorrect - kill kill kill
+        socket.destroy();
+      }
+    }
+  }
+
+  userAuthenticated(client, socket, timer) {
+    // invalidate the timer if it was passed
+    if (timer !== undefined) {
+      clearTimeout(timer);
+      timer = null;
+    }
+
+    // set the client's socket to start handling their usual commands
+    client.setSocket(socket);
+
+    // add the client's IP to the account
+    client.account.userLoggedOn(new Date(), client.ip);
+
+    // check if client.name is already in this.clients
+    if (Object.keys(this.clients).indexOf(client.name) > -1) {
+      this.clients[client.name].kill("Your connection has been closed because someone else logged on with your username.");
+    }
+
+    // add the client to the list
+    this.clients[client.name] = client;
+
+    // put the new client in the main room
+    this.rooms.main.join(client, true);
   }
 }
 

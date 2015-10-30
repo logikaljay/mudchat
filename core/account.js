@@ -1,13 +1,5 @@
 "use strict";
 
-var name;
-var password;
-var level;
-var lastLogin;
-var compact;
-var knownAddresses = [];
-var gagList = [];
-
 var util = require('util');
 var fs = require('fs');
 var path = require('path');
@@ -23,15 +15,33 @@ class Account {
         this.salt = obj.salt;
         this.password = obj.password;
         this.level = obj.level;
+        this.lastLogin = obj.lastLogin;
+        this.compact = obj.compact;
+        this.gagList = obj.gagList;
+        this.knownAddresses = obj.knownAddresses;
+        this.created = obj.created;
       }
     } else {
-      this.name = name;
-      this.salt = Account.generateSalt();
-      this.password = Account.hashPassword(this.salt, password);
-      this.level = level;
 
-      fs.writeFileSync(Account.getPath(this.name), JSON.stringify(this), 'utf8');
+      // make sure the user does not already exist
+      if (!Account.exists(name)) {
+        this.name = name;
+        this.salt = Account.generateSalt();
+        this.password = Account.hashPassword(this.salt, password);
+        this.level = level;
+        this.created = new Date();
+
+        this.save();
+      }
     }
+  }
+
+  static exists(name) {
+     return fs.existsSync(path.join(Account.getPath(name)));
+  }
+
+  static numAccounts() {
+    return fs.readdirSync(path.join(Account.getPath(), '..')).length;
   }
 
   static getPath(name) {
@@ -60,8 +70,47 @@ class Account {
     }
   }
 
+  static challenge(socket, callback) {
+    var message = "You have 30 seconds to message me your password.";
+    var hexMessage = "";
+    for (var i = 0; i < message.length; i++) {
+      hexMessage += message.charCodeAt(i).toString(16);
+    }
+
+    var buf = new Buffer('05' + hexMessage + 'FF', 'hex');
+    socket.write(buf);
+    var t = setTimeout(() => {
+      socket.destroy();
+    }, 5 * 1000);
+
+    callback(t);
+  }
+
+  save() {
+    fs.writeFileSync(Account.getPath(this.name), JSON.stringify(this), 'utf8');
+  }
+
   validate(password) {
     return Account.hashPassword(this.salt, password) === this.password;
+  }
+
+  hasIPAddress(ip) {
+    if (this.knownAddresses === undefined) {
+      this.knownAddresses = [];
+      return false;
+    } else {
+      return this.knownAddresses.indexOf(ip) > -1;
+    }
+  }
+
+  userLoggedOn(date, ip) {
+    if (!this.hasIPAddress(ip)) {
+      this.knownAddresses.push(ip);
+    }
+
+    this.lastLogin = new Date();
+
+    this.save();
   }
 }
 

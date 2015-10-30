@@ -23,7 +23,7 @@ new Command('who', 'show who is connected', 0, (client, name, cmd) => {
   for (var i in clients) {
     var c = clients[i];
     response += printf("  %s%-18s %s%-16s %s%-18s  %s%-10s  %s%-19s  %-10s\n",
-      ANSIColor.GRN, c.name, ANSIColor.RED, moment(c.lastEvent.date).fromNow(true), ANSIColor.GRN, util.format("%s (%s)", c.name, 1), ANSIColor.CYN, c.room.name, ANSIColor.YEL, c.ip, c.version);
+      ANSIColor.GRN, c.name, ANSIColor.RED, moment(c.lastEvent.date).fromNow(true), ANSIColor.GRN, util.format("%s (%s)", c.name, c.account.level), ANSIColor.CYN, c.room.name, ANSIColor.YEL, c.ip, c.version);
   }
 
   client.send(response, true);
