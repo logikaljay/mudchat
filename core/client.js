@@ -87,6 +87,10 @@ class Client {
     var str = data.toString();
     var command = data[0].toString(16);
 
+    if (command < 10) {
+      command = "0" + command;
+    }
+
     // create a message event
     var message = new MessageEvent(this, command, data.toString().substring(1, data.length - 1));
 
@@ -106,11 +110,11 @@ class Client {
       case MessageEvent.Type.VERSION:
         // some clients send through the version twice (I'm looking at you TinTin++)
         break;
-      case MessageEvent.Type.PRIVATE:
+      case MessageEvent.Type.PUBLIC:
         // message to all = 4: \nTinTin chats to everyone, 'hi'
         process.emit('chat.client.message.room', message);
         break;
-      case MessageEvent.Type.PUBLIC:
+      case MessageEvent.Type.PRIVATE:
         // private message = 5: \nTinTin chats to you, 'hi'
         this.handleCommand(message);
         break;

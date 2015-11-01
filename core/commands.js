@@ -46,7 +46,7 @@ class Commands {
     if (commands[name] !== undefined) {
 
       // make sure that the user is able to execute this command
-      if (client.account.level >= commands[name].level) {
+      if (client.account.level >= commands[name].minLevel) {
         commands[name].exec(client, name, command);
       } else {
         new MessageEvent(client, '05', 'Sorry! you do not have permission to do that.').send();

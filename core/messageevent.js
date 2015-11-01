@@ -13,6 +13,7 @@ class MessageEvent {
     if (this.client.socket.writable) {
 
       if (this.command.length > 0 && this.data.length > 0) {
+        console.log(this.command + " " + this.data);
 
         // formulate the hexMessage
         var hexMessage = "";
@@ -30,15 +31,15 @@ class MessageEvent {
 
 const TYPE = {
   VERSION: "13",
-  PUBLIC: "4",
-  PRIVATE: "5",
+  PUBLIC: "04",
+  PRIVATE: "05",
   PINGREQUEST: "1a",
-  NAMECHANGE: "1",
+  NAMECHANGE: "01",
   PEEK: "1c",
   RAW: "74",
   UPLOAD: "14",
   UPLOADCANCEL: "19",
-  SERVED: "7",
+  SERVED: "07",
   END: "FF"
 };
 

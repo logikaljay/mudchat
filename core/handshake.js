@@ -2,15 +2,7 @@
 
 var util = require('util');
 
-/**
- * Handshake specific commands
- * @type {Object}
- * @private
- */
-var commands = {
-  _version: "13",
-  _end: "FF"
-};
+var MessageEvent = require('./messageevent');
 
 /**
  * Coordinate the connection of a new chat client to the server.
@@ -98,7 +90,7 @@ class Handshake {
     }
 
     // send the version
-    var buf = new Buffer(commands._version + hexVersion + commands._end, 'hex');
+    var buf = new Buffer(MessageEvent.Type.VERSION + hexVersion + MessageEvent.Type.END, 'hex');
     this.socket.write(buf);
   }
 
@@ -107,7 +99,7 @@ class Handshake {
    * @param  {String} data the data received over the socket
    */
   getVersion(data) {
-    if (data[0].toString(16) == commands._version) {
+    if (data[0].toString(16) == MessageEvent.Type.VERSION) {
       this.version = data.toString().substring(1, data.length - 2);
     }
 
