@@ -95,7 +95,7 @@ class Room {
       this.send({ client: client, data: util.format('%s has joined the room', client.name) });
     }
 
-    client.send(new MessageEvent('05', client, util.format("You have joined the '%s' room", this.name)));
+    new MessageEvent(client, MessageEvent.Type.PRIVATE, util.format("You have joined the '%s' room", this.name)).send();
   }
 
   /**

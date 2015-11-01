@@ -5,6 +5,8 @@ var commands = [];
 var fs = require('fs');
 var path = require('path');
 
+var MessageEvent = require('./messageevent');
+
 /**
  * Commands class used to by the chat server and its plugins to manage the list of commands
  */
@@ -42,7 +44,13 @@ class Commands {
 
     // make sure our command isnt undefined
     if (commands[name] !== undefined) {
-      commands[name].exec(client, name, command);
+
+      // make sure that the user is able to execute this command
+      if (client.account.level >= commands[name].level) {
+        commands[name].exec(client, name, command);
+      } else {
+        new MessageEvent(client, '05', 'Sorry! you do not have permission to do that.').send();
+      }
     }
   }
 

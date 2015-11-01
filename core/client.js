@@ -88,7 +88,7 @@ class Client {
     var command = data[0].toString(16);
 
     // create a message event
-    var message = new MessageEvent(command, this, data.toString().substring(1, data.length - 1));
+    var message = new MessageEvent(this, command, data.toString().substring(1, data.length - 1));
 
     // set the last seen for the client
     this.lastEvent = message;
@@ -103,38 +103,38 @@ class Client {
    */
   handleMessage(message) {
     switch (message.command) {
-      case "13":
+      case MessageEvent.Type.VERSION:
         // some clients send through the version twice (I'm looking at you TinTin++)
         break;
-      case "4":
+      case MessageEvent.Type.PRIVATE:
         // message to all = 4: \nTinTin chats to everyone, 'hi'
         process.emit('chat.client.message.room', message);
         break;
-      case "5":
+      case MessageEvent.Type.PUBLIC:
         // private message = 5: \nTinTin chats to you, 'hi'
         this.handleCommand(message);
         break;
-      case "1a":
+      case MessageEvent.Type.PINGREQUEST:
         // ping request = 1a: 1446068720587471
         this.handlePingResponse(message);
         break;
-      case "1":
+      case MessageEvent.Type.NAMECHANGE:
         // client name change = 1: bob
         this.handleNameChange(message);
         break;
-      case "1c":
+      case MessageEvent.Type.PEEK:
         // peek connections = 1c:
         break;
-      case "74":
+      case MessageEvent.Type.RAW:
         // send raw data message = 74: t++
         break;
-      case "14":
+      case MessageEvent.Type.UPLOAD:
         // upload file request = 14: tt++,835392
         break;
-      case "7":
+      case MessageEvent.Type.SERVED:
         // serve'd by client = 7: \nbob is now chat serving you.\n
         break;
-      case "19":
+      case MessageEvent.Type.UPLOADCANCEL:
         // cancel file request
         break;
       default:

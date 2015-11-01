@@ -10,7 +10,7 @@ var Commands = require('../core/commands');
 var MessageEvent = require('../core/messageevent');
 var ANSIColor = require('../core/color');
 
-new Command('who', 'show who is connected', 0, (client, name, cmd) => {
+new Command('who', 'show who is connected', 1, (client, name, cmd) => {
   var clients = Server.getInstance().clients;
   var response = "";
 
