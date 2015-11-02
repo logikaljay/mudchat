@@ -13,7 +13,6 @@ class MessageEvent {
     if (this.client.socket.writable) {
 
       if (this.command.length > 0 && this.data.length > 0) {
-        console.log(this.command + " " + this.data);
 
         // formulate the hexMessage
         var hexMessage = "";

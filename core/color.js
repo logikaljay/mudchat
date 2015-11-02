@@ -40,7 +40,7 @@ function chr(num) {
 }
 
 ANSIColor.header = function(name) {
- return util.format("%s[%s%s%s]", ANSIColor.RED, ANSIColor.WHT, "chatserv", ANSIColor.RED);
+ return util.format("%s[%s%s%s]", ANSIColor.RED, ANSIColor.WHT, (name !== undefined ? name : "chatserv"), ANSIColor.RED);
 };
 
 ANSIColor.name = function(name) {
