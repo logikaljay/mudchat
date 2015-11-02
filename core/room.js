@@ -65,16 +65,16 @@ class Room {
    * Send a message to all clients in a room
    * @param  {Object} payload the message to send, and the client it was sent from
    */
-  send(payload) {
+  send(e) {
     for (var i in this.clients) {
       var client = this.clients[i];
 
       // console.log("room %s contains %s", this.name, this.clients.length);
 
-      if (payload.client === null) {
-        client.send(payload.data, false);
-      } else if (client.name !== payload.client.name) {
-        client.send(payload.data, false);
+      if (e.client === null) {
+        client.send(e);
+      } else if (client.name !== e.client.name) {
+        client.send(e);
       }
     }
   }

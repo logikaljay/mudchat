@@ -105,6 +105,21 @@ class Account {
   }
 
   /**
+   * Delete an account file
+   * @param  {String} name the name of the account to delete
+   * @return {Boolean}      true if the account was deleted
+   */
+  static delete(name) {
+    if (Account.exists(name)) {
+      var path = Account.getPath(name);
+      fs.unlinkSync(path);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
    * Save the user account
    */
   save() {

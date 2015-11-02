@@ -18,8 +18,16 @@ class MessageEvent {
         // formulate the hexMessage
         var hexMessage = "";
         for (var i = 0; i < this.data.length; i++) {
-          hexMessage += this.data.charCodeAt(i).toString(16);
+          // intercept new lines
+          if (this.data.charCodeAt(i) == '10') {
+            hexMessage += '0a';
+          } else if (this.data.charCodeAt(i) == '9') {
+            hexMessage += '09';
+          } else {
+            hexMessage += ''+this.data.charCodeAt(i).toString(16);
+          }
         }
+
 
         var buf = new Buffer(this.command + hexMessage + MessageEvent.Type.END, 'hex');
         this.client.socket.write(buf);

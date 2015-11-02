@@ -1,5 +1,7 @@
 "use strict";
 
+var util = require('util');
+
 const ANSIColor = {
   NRM: chr(27) + "[0m",
   BLD: chr(27)+ "[1m",
@@ -36,5 +38,17 @@ function chr(num) {
 
   return String.fromCharCode(num);
 }
+
+ANSIColor.header = function(name) {
+ return util.format("%s[%s%s%s]", ANSIColor.RED, ANSIColor.WHT, "chatserv", ANSIColor.RED);
+};
+
+ANSIColor.name = function(name) {
+  return util.format('%s%s%s', ANSIColor.WHT, name, ANSIColor.RED);
+};
+
+ANSIColor.detail = function(outer, inner) {
+  return util.format('%s%s%s(%s%d%s)%s', ANSIColor.WHT, outer, ANSIColor.YEL, ANSIColor.WHT, inner, ANSIColor.YEL, ANSIColor.RED);
+};
 
 module.exports = ANSIColor;
