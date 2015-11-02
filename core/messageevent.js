@@ -23,6 +23,8 @@ class MessageEvent {
             hexMessage += '0a';
           } else if (this.data.charCodeAt(i) == '9') {
             hexMessage += '09';
+          } else if (this.data.charCodeAt(i) == '13') {
+            hexMessage += '0d';
           } else {
             hexMessage += ''+this.data.charCodeAt(i).toString(16);
           }

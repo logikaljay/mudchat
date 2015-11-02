@@ -1,8 +1,6 @@
 "use strict";
 
 var util = require('util');
-var moment = require('moment');
-var printf = require('printf');
 
 var Server = require('../core/server');
 var Command = require('../core/command');

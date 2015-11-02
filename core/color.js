@@ -47,8 +47,12 @@ ANSIColor.name = function(name) {
   return util.format('%s%s%s', ANSIColor.WHT, name, ANSIColor.RED);
 };
 
-ANSIColor.detail = function(outer, inner) {
+ANSIColor.brackets = function(outer, inner) {
   return util.format('%s%s%s(%s%d%s)%s', ANSIColor.WHT, outer, ANSIColor.YEL, ANSIColor.WHT, inner, ANSIColor.YEL, ANSIColor.RED);
+};
+
+ANSIColor.details = function(left, right) {
+  return util.format('%s%s%s: %s%s%s', ANSIColor.RED, left, ANSIColor.YEL, ANSIColor.WHT, right, ANSIColor.RED);
 };
 
 module.exports = ANSIColor;

@@ -1,9 +1,6 @@
-
 "use strict";
 
 var util = require('util');
-var moment = require('moment');
-var printf = require('printf');
 
 var Server = require('../core/server');
 var Command = require('../core/command');
@@ -51,7 +48,7 @@ new Command('add', 'Add an account', 3, (client, name, cmd) => {
     MessageEvent.Type.PUBLIC,
     util.format("%s Account %s added by %s",
       ANSIColor.header("chatserv"),
-      ANSIColor.detail(username, level),
+      ANSIColor.brackets(username, level),
       ANSIColor.name(client.name))
   ));
 });
