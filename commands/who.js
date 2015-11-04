@@ -26,5 +26,5 @@ new Command('who', 'show who is connected', 1, (client, name, cmd) => {
       ANSIColor.GRN, c.name, ANSIColor.RED, moment(c.lastEvent.date).fromNow(true), ANSIColor.GRN, util.format("%s (%s)", c.name, c.account.level), ANSIColor.CYN, c.room.name, ANSIColor.YEL, c.ip, c.version);
   }
 
-  client.send(response, true);
+  MessageEvent.private(response).toClient(client).send();
 });

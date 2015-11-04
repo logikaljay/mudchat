@@ -49,7 +49,7 @@ class Client {
   /**
    * Send a message to the client
    * @param  {MessageEvent/String}   MessageEvent  the MessageEvent to send
-   * @param  {Boolean}        isPrivate     if true, send a private message to the client
+   * @param  {Boolean}               isPrivate     if true, send a private message to the client
    */
   send(message, isPrivate) {
     if (message instanceof MessageEvent) {
@@ -153,7 +153,7 @@ class Client {
    * @param  {Object} payload [the command data and client who sent it]
    */
   handleCommand(message) {
-    if (message.client === undefined || message.data === undefined) {
+    if (message.sender === undefined || message.data === undefined) {
       return;
     }
 
@@ -162,7 +162,7 @@ class Client {
     var command = commandData[2].split(" ");
 
     var Commands = require('./commands');
-    Commands.exec(message.client, command);
+    Commands.exec(message.sender, command);
   }
 
   handlePingResponse(message) {

@@ -90,8 +90,9 @@ class Handshake {
     }
 
     // send the version
-    var buf = new Buffer(MessageEvent.Type.VERSION + hexVersion + MessageEvent.Type.END, 'hex');
-    this.socket.write(buf);
+    var versionEvent = MessageEvent.version(version).toSocket(this.socket);
+    console.log(versionEvent);
+    versionEvent.send();
   }
 
   /**

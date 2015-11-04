@@ -42,7 +42,9 @@ class Room {
     }
 
     process.emit('chat.room.create', this);
-    process.on('chat.client.message.room', this.send.bind(this));
+    process.on('chat.client.message.room', (messageEvent) => {
+      messageEvent.toClients(this.clients).not(messageEvent.sender).send();
+    });
   }
 
   destroy() {
@@ -64,8 +66,9 @@ class Room {
   /**
    * Send a message to all clients in a room
    * @param  {Object} payload the message to send, and the client it was sent from
-   */
+
   send(e) {
+    new MessageEvent.public(e)
     for (var i in this.clients) {
       var client = this.clients[i];
 
@@ -78,24 +81,29 @@ class Room {
       }
     }
   }
-
+   */
   /**
    * Join a room
    * @param  {Client}  client the client to put in the room
    * @param  {Boolean} silent if true, don't advertise it to the room
    */
   join(client, silent) {
+    let publicMessage = util.format("You have joined the '%s' room", this.name);
+    let privateMessage = util.format("You have joined the '%s' room", this.name);
+
     // add the client to this room's list of clients
     this.clients.push(client);
 
     // set the client's room
     client.room = this;
 
+    // send a message to the room
     if (silent === undefined) {
-      this.send({ client: client, data: util.format('%s has joined the room', client.name) });
+      MessageEvent.public(publicMessage).toClients(this.clients).not(client).send();
     }
 
-    new MessageEvent(client, MessageEvent.Type.PRIVATE, util.format("You have joined the '%s' room", this.name)).send();
+    // send a message to the client
+    MessageEvent.private(privateMessage).toClient(client).send();
   }
 
   /**
@@ -104,13 +112,10 @@ class Room {
    * @param  {Boolean} silent if true, don't advertise it to the room
    */
   leave(client, silent) {
-    // remove the client from this room's list of clients
-    this.clients = this.clients.filter(function(c) {
-      return client.name !== c.name;
-    });
+    let publicMessage = util.format('%s has left the room', client.name);
 
     if (silent === undefined) {
-      this.send({ client: client, data: util.format('%s has left the room', client.name) });
+      MessageEvent.public(publicMessage).toClients(this.clients).not(client).send();
     }
 
     // No need to tell the user they have left the room - joining seems good enough.

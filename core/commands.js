@@ -36,7 +36,7 @@ class Commands {
    * @param  {Client} client  the client that is executing the command
    * @param  {Array}  command the array of the command payload
    */
-  static exec(client, command) {
+  static exec(sender, command) {
     this.init();
 
     // get the name of the command by shifting the array
@@ -46,10 +46,10 @@ class Commands {
     if (commands[name] !== undefined) {
 
       // make sure that the user is able to execute this command
-      if (client.account.level >= commands[name].minLevel) {
-        commands[name].exec(client, name, command);
+      if (sender.account.level >= commands[name].minLevel) {
+        commands[name].exec(sender, name, command);
       } else {
-        new MessageEvent(client, '05', 'Sorry! you do not have permission to do that.').send();
+        MessageEvent.private('Sorry! you do not have permission to do that.').toClient(sender).send();
       }
     }
   }

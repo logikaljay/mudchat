@@ -5,7 +5,9 @@
   "main": "test/server.js",
   "scripts": {
     "start": "node ./test/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug": "node --debug ./test/server.js",
+    "debug-start": "node --debug-brk ./test/server.js"
   },
   "author": "",
   "license": "ISC",
