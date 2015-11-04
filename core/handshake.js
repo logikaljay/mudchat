@@ -90,9 +90,7 @@ class Handshake {
     }
 
     // send the version
-    var versionEvent = MessageEvent.version(version).toSocket(this.socket);
-    console.log(versionEvent);
-    versionEvent.send();
+    MessageEvent.version(version).toSocket(this.socket).send();
   }
 
   /**

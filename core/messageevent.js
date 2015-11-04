@@ -76,8 +76,8 @@ class MessageEvent {
   }
 
   not(client) {
-    this.clients = this.clients.filter((client) => {
-      return client.ip !== client.ip;
+    this.clients = this.clients.filter((c) => {
+      return c.name !== client.name;
     });
 
     return this;
@@ -85,15 +85,15 @@ class MessageEvent {
 
   send() {
     if (this.command === null) {
-      throw "No command supplied";
+      throw new Error("No command supplied");
     }
 
     if (this.data === null) {
-      throw "No message supplied";
+      throw new Error("No message supplied");
     }
 
     if (this.clients === undefined && this.client === undefined) {
-      throw "No client(s) supplied";
+      throw new Error("No client(s) supplied");
     }
 
     var hexMessage = MessageEvent.convertHex(this.data);
@@ -102,7 +102,7 @@ class MessageEvent {
     if (this.clients !== undefined) {
       for (var i in this.clients) {
         if (!this.clients[i].socket.writable) {
-          return this;
+           break;
         }
 
         this.clients[i].socket.write(buf);

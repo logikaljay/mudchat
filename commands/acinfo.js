@@ -34,26 +34,19 @@ new Command('acinfo', 'List account information', 2, (client, name, cmd) => {
       }
 
       // send information about this account to the client
-      new MessageEvent(
-        client,
-        MessageEvent.Type.PRIVATE,
-        message
-      ).send();
+      MessageEvent.private(message).toClient(client).send();
     } else {
 
       // account does not exist
-      new MessageEvent(
-        client,
-        MessageEvent.Type.PRIVATE,
-        util.format("%s Unable to get account details for %s:\n\t%sAccount does not exist", ANSIColor.header("chatserv"), ANSIColor.name(cmd[0]), ANSIColor.WHT)
-      ).send();
+      message = util.format("%s Unable to get account details for %s:\n\t%sAccount does not exist", ANSIColor.header("chatserv"), ANSIColor.name(cmd[0]), ANSIColor.WHT);
+      MessageEvent.private(message).toClient(client).send();
 
     }
   } else {
     // get information about all accounts
     var accounts = fs.readdirSync(path.join(Account.getPath(), '..'));
 
-    const HEADER = util.format("Current chat accounts:\n%s[ %sName             %s][ %sLast seen         %s][ %sAccount (Lvl)    %s]\n" +
+    const HEADER = util.format("Current chat accounts:\n%s[ %sName             %s][ %sLast login        %s][ %sAccount (Lvl)    %s]\n" +
       "%s ------------------  -------------------  ------------------",
       ANSIColor.BLU, ANSIColor.WHT, ANSIColor.BLU, ANSIColor.WHT, ANSIColor.BLU, ANSIColor.WHT, ANSIColor.BLU, ANSIColor.WHT, ANSIColor.BLU, ANSIColor.WHT, ANSIColor.BLU, ANSIColor.WHT, ANSIColor.BLU, ANSIColor.WHT);
 
@@ -61,14 +54,11 @@ new Command('acinfo', 'List account information', 2, (client, name, cmd) => {
     for (var i in accounts) {
       var account = new Account(accounts[i].replace('.json', ''));
 
+      var lastLogin = moment(account.lastLogin);
       message += printf("  %s%-18s %s%-22s %s%-18s\n",
-        ANSIColor.GRN, account.name, ANSIColor.RED, moment(account.lastSeen).fromNow(true), ANSIColor.GRN, util.format("%s (%s)", account.name, account.level));
+        ANSIColor.GRN, account.name, ANSIColor.RED, lastLogin.fromNow(), ANSIColor.GRN, util.format("%s (%s)", account.name, account.level));
     }
 
-    new MessageEvent(
-      client,
-      MessageEvent.Type.PRIVATE,
-      util.format(HEADER +"\n"+ message)
-    ).send();
+    MessageEvent.private(util.format(HEADER +"\n"+ message)).toClient(client).send();
   }
 });

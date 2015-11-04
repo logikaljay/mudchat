@@ -12,12 +12,14 @@ var name;
 class Hi extends Plugin {
   onLoad() {
     var room = Server.getInstance().rooms.main;
-    room.send(new MessageEvent(null, MessageEvent.Type.PRIVATE, util.format('%s %s', ANSIColor.header('hi'), ANSIColor.details('plugin', 'loaded'))));
+    var message = util.format('%s %s', ANSIColor.header('hi'), ANSIColor.details('plugin', 'loaded'));
+    MessageEvent.private(message).toClients(room.clients).send();
   }
 
   onUnload() {
     var room = Server.getInstance().rooms.main;
-    room.send(new MessageEvent(null, MessageEvent.Type.PRIVATE, util.format('%s %s', ANSIColor.header('hi'), ANSIColor.details('plugin', 'unloaded'))));
+    var message = util.format('%s %s', ANSIColor.header('hi'), ANSIColor.details('plugin', 'unloaded'));
+    MessageEvent.private(message).toClients(room.clients).send();
   }
 }
 

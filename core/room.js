@@ -99,7 +99,7 @@ class Room {
 
     // send a message to the room
     if (silent === undefined) {
-      MessageEvent.public(publicMessage).toClients(this.clients).not(client).send();
+      MessageEvent.public(publicMessage).toClients(this.clients).send();
     }
 
     // send a message to the client

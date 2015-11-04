@@ -21,4 +21,8 @@ process.on('chat.commands.loading', function(data) {
   console.log('Loading %s commands', data.length);
 });
 
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});
+
 var server = new Server('chatserver', 4050);

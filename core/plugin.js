@@ -40,10 +40,10 @@ class Plugin {
       if (plugin.validate()) {
 
         plugin.onLoad();
-        return true;
+        return {loaded:true};
       }
     } else {
-      return false;
+      return {loaded:false};
     }
   }
 }
