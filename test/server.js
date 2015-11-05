@@ -2,7 +2,7 @@
 var Server = require('../core/server');
 
 process.on('chat.server.started', function(server) {
-  console.log("Chat server started on port %s", server.port);
+  console.log("Chat server started on port %s:%s", server._server.address().address, server.port);
 });
 
 process.on('chat.client.connection', function(socket) {
@@ -21,8 +21,10 @@ process.on('chat.commands.loading', function(data) {
   console.log('Loading %s commands', data.length);
 });
 
+/*
 process.on('uncaughtException', function (err) {
   console.log('Caught exception: ' + err);
 });
+*/
 
 var server = new Server('chatserver', 4050);

@@ -5,12 +5,12 @@ var Command = require('../core/command');
 var Server = require('../core/server');
 var Room = require('../core/room');
 
-new Command('join', 'join a [room]', 0, (client, name, cmd) => {
+new Command('join', 'join a [room]', 0, (sender, name, cmd) => {
   var commands = Commands.all();
   var response;
 
   if (cmd == [] || cmd.length < 1) {
-    Commands.exec(client, ['help', 'join']);
+    Commands.exec(sender, ['help', 'join']);
     return;
   }
 
@@ -20,6 +20,6 @@ new Command('join', 'join a [room]', 0, (client, name, cmd) => {
     room = Server.getInstance().rooms[cmd[0]] = new Room(cmd[0], null, 0);
   }
 
-  client.room.leave(client);
-  room.join(client);
+  sender.room.leave(sender);
+  room.join(sender);
 });

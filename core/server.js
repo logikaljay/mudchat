@@ -22,14 +22,14 @@ class Server {
     this.name = name || 'chatserver';
     this.port = port || 4050;
 
-    this.clients = [];
-    this.rooms = [];
+    this.clients = new Map();
+    this.rooms = new Map();
 
     // load commands
     Commands.load();
 
     // create the main room
-    this.rooms.main = new Room("main", null, 0);
+    this.rooms.set('main', new Room('main', null, 0));
 
     // create the socket
     this._server = this.createServer(port, this);
@@ -56,7 +56,6 @@ class Server {
    */
   createServer(port) {
     // setup the socket
-    this.clients = [];
     return net.createServer(socket => {
 
       // emit a event about the connection
@@ -171,14 +170,15 @@ class Server {
 
     // check if client.name is already in this.clients
     if (Object.keys(this.clients).indexOf(client.name) > -1) {
-      this.clients[client.name].kill("Your connection has been closed because someone else logged on with your username.");
+      this.clients.get(client.name).kill("Your connection has been closed because someone else logged on with your username.");
     }
 
     // add the client to the list
-    this.clients[client.name] = client;
+    this.clients.set(client.name, client);
 
     // put the new client in the main room
-    this.rooms.main.join(client, true);
+    var room = Room.get('main');
+    room.join(client, true);
   }
 }
 

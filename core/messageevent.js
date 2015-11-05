@@ -54,11 +54,13 @@ class MessageEvent {
     this.command = command;
     this.sender = sender;
     this.data = data;
+    this.clients = new Map();
     this.date = new Date();
   }
 
   toClient(client) {
-    this.clients = [client];
+    this.clients = new Map();
+    this.clients.set(client.name, client);
 
     return this;
   }
@@ -70,15 +72,14 @@ class MessageEvent {
   }
 
   toSocket(socket) {
-    this.clients = [{socket:socket}];
+    this.clients = new Map();
+    this.clients.set('socket', {socket: socket});
 
     return this;
   }
 
   not(client) {
-    this.clients = this.clients.filter((c) => {
-      return c.name !== client.name;
-    });
+    this.clients.delete(client.name);
 
     return this;
   }
@@ -92,7 +93,7 @@ class MessageEvent {
       throw new Error("No message supplied");
     }
 
-    if (this.clients === undefined && this.client === undefined) {
+    if (this.clients === undefined && this.sender === undefined) {
       throw new Error("No client(s) supplied");
     }
 
@@ -100,13 +101,14 @@ class MessageEvent {
     var buf = new Buffer(this.command + hexMessage + TYPE.END, 'hex');
 
     if (this.clients !== undefined) {
-      for (var i in this.clients) {
-        if (!this.clients[i].socket.writable) {
-           break;
+      console.log(this.clients.entries());
+      this.clients.forEach(function(value, key) {
+        if (!value.socket.writable) {
+           return;
         }
 
-        this.clients[i].socket.write(buf);
-      }
+        value.socket.write(buf);
+      });
     } else {
       this.sender.socket.write(buf);
     }

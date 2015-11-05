@@ -8,7 +8,7 @@ var MessageEvent = require('../core/messageevent');
 var Account = require('../core/account');
 var ANSIColor = require('../core/color');
 
-new Command('add', 'Add an account', 3, (client, name, cmd) => {
+new Command('add', 'Add an account', 3, (sender, name, cmd) => {
   var clients = Server.getInstance().clients;
   var help;
 
@@ -23,19 +23,19 @@ new Command('add', 'Add an account', 3, (client, name, cmd) => {
 
     help = util.format("Unable to add account:\n\t%sInvalid Arguments\n\n" +
                            "\t%sUsage: %s/chat 1 add <name> <password> [level]", ANSIColor.WHT, ANSIColor.RED, ANSIColor.WHT);
-    new MessageEvent(client, MessageEvent.Type.PRIVATE, help).send();
+    MessageEvent.private(help).toClient(sender).send();
     return;
   }
 
   // make sure that level is less than, or = the client's level - 3's can't add 4's etc.
-  if (level >= client.level) {
-    level = client.level;
+  if (level >= sender.level) {
+    level = sender.level;
   }
 
   // make sure that the user doesn't already exist
   if (Account.exists(username)) {
     help = util.format("Unable to add account:\n\t%sUser already exists\n", ANSIColor.WHT);
-    new MessageEvent(client, MessageEvent.Type.PRIVATE, help).send();
+    MessageEvent.private(help).toClient(sender).send();
     return;
   }
 
@@ -43,12 +43,7 @@ new Command('add', 'Add an account', 3, (client, name, cmd) => {
   var acc = new Account(username, password, level);
 
   // display the added account message to the main room.
-  Server.getInstance().rooms.main.send(new MessageEvent(
-    null,
-    MessageEvent.Type.PUBLIC,
-    util.format("%s Account %s added by %s",
-      ANSIColor.header("chatserv"),
-      ANSIColor.brackets(username, level),
-      ANSIColor.name(client.name))
-  ));
+  var room = Server.getInstance().rooms.main;
+  var message = util.format("%s Account %s added by %s", ANSIColor.header("chatserv"),ANSIColor.brackets(username, level),ANSIColor.name(client.name));
+  MessageEvent.public(message).toClients(room.clients).send();
 });

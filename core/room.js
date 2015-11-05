@@ -34,8 +34,8 @@ class Room {
     this.destroyable = true;
     this.silent = false;
 
-    this.clients = [];
-    this.listeners = [];
+    this.clients = new Map();
+    this.listeners = new Map();
 
     if (this.name !== "main") {
       var lvlString = minLevel > 0 ? "(minLvl "+this.minLvl+")" : "";
@@ -47,59 +47,37 @@ class Room {
     });
   }
 
+  static get(name) {
+    var Server = require('./server');
+    var rooms = Server.getInstance().rooms;
+    return rooms.get(name);
+  }
+
   destroy() {
     // get the chat server
     var self = this;
     var Server = require('./server');
-    var rooms = Server.getInstance().rooms;
-
-    // remove this room from the list of rooms
-    rooms = rooms.filter(function(room) {
-      console.log("Removing '" + room.name + "': " + (room.name == self.name));
-      return room.name !== self.name;
-    });
-    Server.getInstance().rooms = rooms;
-
-    // because this is no longer referenced, it should get GC'd
+    Server.getInstance().rooms.delete(this.name);
   }
 
-  /**
-   * Send a message to all clients in a room
-   * @param  {Object} payload the message to send, and the client it was sent from
-
-  send(e) {
-    new MessageEvent.public(e)
-    for (var i in this.clients) {
-      var client = this.clients[i];
-
-      // console.log("room %s contains %s", this.name, this.clients.length);
-
-      if (e.client === null) {
-        client.send(e);
-      } else if (client.name !== e.client.name) {
-        client.send(e);
-      }
-    }
-  }
-   */
   /**
    * Join a room
    * @param  {Client}  client the client to put in the room
    * @param  {Boolean} silent if true, don't advertise it to the room
    */
   join(client, silent) {
-    let publicMessage = util.format("You have joined the '%s' room", this.name);
+    let publicMessage = util.format("%s has joined the '%s' room", client.name, this.name);
     let privateMessage = util.format("You have joined the '%s' room", this.name);
 
     // add the client to this room's list of clients
-    this.clients.push(client);
+    this.clients.set(client.name, client);
 
     // set the client's room
     client.room = this;
 
     // send a message to the room
     if (silent === undefined) {
-      MessageEvent.public(publicMessage).toClients(this.clients).send();
+      MessageEvent.public(publicMessage).toClients(this.clients).not(client).send();
     }
 
     // send a message to the client
@@ -114,21 +92,16 @@ class Room {
   leave(client, silent) {
     let publicMessage = util.format('%s has left the room', client.name);
 
+    // remove the client from this room
+    this.clients.delete(client.name);
+
+    // announce
     if (silent === undefined) {
       MessageEvent.public(publicMessage).toClients(this.clients).not(client).send();
     }
 
     // No need to tell the user they have left the room - joining seems good enough.
     // client.send(util.format("You have left the '%s' room", this.name));
-  }
-
-  /**
-   * Get the room
-   * @param  {String} name  the name of the room to get
-   * @return {Room}         the room object
-   */
-  get(name) {
-    return Server.getInstance().rooms[name];
   }
 }
 

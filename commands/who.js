@@ -10,7 +10,7 @@ var Commands = require('../core/commands');
 var MessageEvent = require('../core/messageevent');
 var ANSIColor = require('../core/color');
 
-new Command('who', 'show who is connected', 1, (client, name, cmd) => {
+new Command('who', 'show who is connected', 1, (sender, name, cmd) => {
   var clients = Server.getInstance().clients;
   var response = "";
 
@@ -26,5 +26,5 @@ new Command('who', 'show who is connected', 1, (client, name, cmd) => {
       ANSIColor.GRN, c.name, ANSIColor.RED, moment(c.lastEvent.date).fromNow(true), ANSIColor.GRN, util.format("%s (%s)", c.name, c.account.level), ANSIColor.CYN, c.room.name, ANSIColor.YEL, c.ip, c.version);
   }
 
-  MessageEvent.private(response).toClient(client).send();
+  MessageEvent.private(response).toClient(sender).send();
 });

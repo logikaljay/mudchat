@@ -4,7 +4,7 @@ var Server = require('../core/server');
 var Command = require('../core/command');
 var Commands = require('../core/commands');
 
-new Command('help', 'show the help', 0, (client, name, cmd) => {
+new Command('help', 'show the help', 0, (sender, name, cmd) => {
   var commands = Commands.all();
   var response;
 

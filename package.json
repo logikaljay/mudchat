@@ -7,6 +7,7 @@
     "start": "node ./test/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "node --debug ./test/server.js",
+    "dev": "node --debug ./test/server.js & PIDDBG=$! && open http://localhost:8080 && node-inspector --save-live-edit || kill -9 $PIDDBG",
     "debug-start": "node --debug-brk ./test/server.js"
   },
   "author": "",
