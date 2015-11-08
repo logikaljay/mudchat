@@ -1,30 +1,32 @@
-// init core
-var Server = require('../core/server');
+"use strict";
 
-process.on('chat.server.started', function(server) {
-  console.log("Chat server started on port %s:%s", server._server.address().address, server.port);
+var Lab = require('lab');
+var Code = require('code');
+var expect = Code.expect;
+var lab = exports.lab = Lab.script();
+
+lab.experiment('server', function () {
+  var Server = require('../core/server');
+  var instance;
+
+  lab.test('returns a Server with correct properties when constructed', function (done) {
+    instance = new Server('chatserver', 4050);
+    expect(instance.name).to.equal('chatserver');
+    expect(instance.port).to.equal(4050);
+    expect(instance.rooms).to.be.a.object();
+    expect(instance.clients).to.be.a.object();
+    expect(instance.rooms.get('main')).to.not.equal(undefined);
+    instance.stop();
+
+    done();
+
+  });
+
+  lab.test('getInstance should return the current Server object', function(done) {
+    instance = new Server('chatserver', 4050);
+    expect(Server.getInstance()).to.equal(instance);
+    instance.stop();
+
+    done();
+  });
 });
-
-process.on('chat.client.connection', function(socket) {
-  console.log("New connection from %s", socket.remoteAddress + ":" + socket.remotePort);
-});
-
-process.on('chat.client.handshake', function(client) {
-  console.log('%s has connected with %s using %s', client.name, client.ip + ":" + client.port, client.protocol);
-});
-
-process.on('chat.room.create', function(room) {
-  console.log("Room created: %s", room.name);
-});
-
-process.on('chat.commands.loading', function(data) {
-  console.log('Loading %s commands', data.length);
-});
-
-/*
-process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
-});
-*/
-
-var server = new Server('chatserver', 4050);

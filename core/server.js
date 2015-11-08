@@ -102,6 +102,12 @@ class Server {
     });
   }
 
+  stop() {
+    if (this._server) {
+      this._server.close();
+    }
+  }
+
   /**
    * Challenge the user for their passwordMatch
    * @param  {Socket}   socket   the socket of the user that is being challenged

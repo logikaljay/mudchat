@@ -10,8 +10,6 @@ var clients = [];
 var listeners = [];
 
 var util = require('util');
-
-var Server = require('./server');
 var MessageEvent = require('./messageevent');
 
 /**
@@ -37,10 +35,6 @@ class Room {
     this.clients = new Map();
     this.listeners = new Map();
 
-    if (this.name !== "main") {
-      var lvlString = minLevel > 0 ? "(minLvl "+this.minLvl+")" : "";
-    }
-
     process.emit('chat.room.create', this);
     process.on('chat.client.message.room', (messageEvent) => {
       messageEvent.toClients(this.clients).not(messageEvent.sender).send();
@@ -49,8 +43,20 @@ class Room {
 
   static get(name) {
     var Server = require('./server');
-    var rooms = Server.getInstance().rooms;
-    return rooms.get(name);
+    if (Server.getInstance()) {
+      var rooms = Server.getInstance().rooms;
+      return rooms.get(name);
+    } else {
+      return undefined;
+    }
+  }
+
+  setSilent(value) {
+    this.silent = value || true;
+  }
+
+  isSilent() {
+    return this.silent;
   }
 
   destroy() {
