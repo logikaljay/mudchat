@@ -1,6 +1,5 @@
 {
   "name": "mudchat",
-  "version": "1.0.0",
   "description": "",
   "main": "test/server.js",
   "scripts": {
@@ -9,7 +8,8 @@
     "commit": "git-cz",
     "debug": "node --debug index",
     "dev": "node --debug index & PIDDBG=$! && open http://localhost:8080 && node-inspector --save-live-edit || kill -9 $PIDDBG",
-    "debug-start": "node --debug-brk index"
+    "debug-start": "node --debug-brk index",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "author": "",
   "license": "ISC",
@@ -21,9 +21,14 @@
     "code": "^2.0.1",
     "commitizen": "^2.4.4",
     "cz-conventional-changelog": "^1.1.4",
-    "lab": "^7.2.0"
+    "lab": "^7.2.0",
+    "semantic-release": "^4.3.5"
   },
   "czConfig": {
     "path": "node_modules/cz-conventional-changelog"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/logikaljay/mudchat.git"
   }
 }
