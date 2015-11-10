@@ -115,6 +115,11 @@ class MessageEvent {
 
     return this;
   }
+
+  buffer() {
+    var hexMessage = MessageEvent.convertHex(this.data);
+    return new Buffer(this.command + hexMessage + TYPE.END, 'hex');
+  }
 }
 
 MessageEvent.Type = TYPE;

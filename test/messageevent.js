@@ -6,7 +6,7 @@ var expect = Code.expect;
 var lab = exports.lab = Lab.script();
 
 lab.experiment('messageevent', function () {
-  var MessageEvent = require('../core/messageEvent');
+  var MessageEvent = require('../core/messageevent');
 
   lab.test('returns a MessageEvent with correct properties', function (done) {
     var message = new MessageEvent(null, '04', 'test');
