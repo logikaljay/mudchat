@@ -33,7 +33,7 @@ lab.experiment('rooms', function () {
       var tmpRoom = Room.get('main');
       expect(tmpRoom).to.not.equal(undefined);
       tmpRoom.destroy();
-      expect(Server.getInstance().rooms.size).to.equal(0);
+      expect(Server.getInstance().rooms.get('main')).to.equal(undefined);
       server.stop();
       done();
     });

@@ -4,11 +4,12 @@
   "description": "",
   "main": "test/server.js",
   "scripts": {
-    "start": "node ./test/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "node --debug ./test/server.js",
-    "dev": "node --debug ./test/server.js & PIDDBG=$! && open http://localhost:8080 && node-inspector --save-live-edit || kill -9 $PIDDBG",
-    "debug-start": "node --debug-brk ./test/server.js"
+    "start": "node index",
+    "test": "lab",
+    "commit": "git-cz",
+    "debug": "node --debug index",
+    "dev": "node --debug index & PIDDBG=$! && open http://localhost:8080 && node-inspector --save-live-edit || kill -9 $PIDDBG",
+    "debug-start": "node --debug-brk index"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +19,11 @@
   },
   "devDependencies": {
     "code": "^2.0.1",
+    "commitizen": "^2.4.4",
+    "cz-conventional-changelog": "^1.1.4",
     "lab": "^7.2.0"
+  },
+  "czConfig": {
+    "path": "node_modules/cz-conventional-changelog"
   }
 }

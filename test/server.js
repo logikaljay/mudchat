@@ -29,4 +29,13 @@ lab.experiment('server', function () {
 
     done();
   });
+
+  lab.test('server constructor should emit a started event', function(done) {
+    process.on('chat.server.started', function(server) {
+      instance.stop();
+      done();
+    });
+
+    instance = new Server('chatserver', 4050);
+  });
 });
