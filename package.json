@@ -1,6 +1,7 @@
 {
   "name": "mudchat",
-  "description": "",
+  "version": "0.0.0-semantically-released",
+  "description": "A mud chat server for the MM2k, and zChat protocols",
   "main": "test/server.js",
   "scripts": {
     "start": "node index",
