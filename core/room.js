@@ -164,18 +164,18 @@ class Room {
   }
 
   /**
-   * return array of clients and listeners
-   * @return {array} array of clients and listeners
+   * return Map of clients and listeners
+   * @return {Map} Map of clients and listeners
    */
   clientsAndListeners() {
-    var result = [];
+    var result = new Map();
 
     for (let value of this.clients.values()) {
-      result.push(value);
+      result.set(value.name, value);
     }
 
     for (let value of this.listeners.values()) {
-      result.push(value);
+      result.set(value.name, value);
     }
 
     return result;
