@@ -71,4 +71,18 @@ lab.experiment('rooms', function () {
       server.stop();
       done();
     });
+
+    lab.test('make sure clients and listeners are combined correctly', function(done) {
+      //var server = new Server('chatserver', 4050);
+      var room = new Room('main', 'password', 1);
+
+      // add a bogus client to the room
+      room.clients.set('jim', { name: 'jim' });
+      room.listeners.set('sam', { name: 'sam' });
+
+      console.log(room.clientsAndListeners());
+      expect(room.clientsAndListeners().length).to.equal(2);
+
+      done();
+    });
 });
