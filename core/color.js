@@ -2,7 +2,7 @@
 
 var util = require('util');
 
-const ANSIColor = {
+const Color = {
   NRM: chr(27) + "[0m",
   BLD: chr(27)+ "[1m",
 	DAR: chr(27) + "[2m",
@@ -39,20 +39,20 @@ function chr(num) {
   return String.fromCharCode(num);
 }
 
-ANSIColor.header = function(name) {
- return util.format("%s[%s%s%s]", ANSIColor.RED, ANSIColor.WHT, (name !== undefined ? name : "chatserv"), ANSIColor.RED);
+Color.header = function(name) {
+ return util.format("%s[%s%s%s]", Color.RED, Color.WHT, (name !== undefined ? name : "chatserv"), Color.RED);
 };
 
-ANSIColor.name = function(name) {
-  return util.format('%s%s%s', ANSIColor.WHT, name, ANSIColor.RED);
+Color.name = function(name) {
+  return util.format('%s%s%s', Color.WHT, name, Color.RED);
 };
 
-ANSIColor.brackets = function(outer, inner) {
-  return util.format('%s%s%s(%s%d%s)%s', ANSIColor.WHT, outer, ANSIColor.YEL, ANSIColor.WHT, inner, ANSIColor.YEL, ANSIColor.RED);
+Color.brackets = function(outer, inner) {
+  return util.format('%s%s%s(%s%d%s)%s', Color.WHT, outer, Color.YEL, Color.WHT, inner, Color.YEL, Color.RED);
 };
 
-ANSIColor.details = function(left, right) {
-  return util.format('%s%s%s: %s%s%s', ANSIColor.RED, left, ANSIColor.YEL, ANSIColor.WHT, right, ANSIColor.RED);
+Color.details = function(left, right) {
+  return util.format('%s%s%s: %s%s%s', Color.RED, left, Color.YEL, Color.WHT, right, Color.RED);
 };
 
-module.exports = ANSIColor;
+module.exports = Color;

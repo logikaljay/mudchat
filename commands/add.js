@@ -6,7 +6,7 @@ var Server = require('../core/server');
 var Command = require('../core/command');
 var MessageEvent = require('../core/messageevent');
 var Account = require('../core/account');
-var ANSIColor = require('../core/color');
+var Color = require('../core/color');
 
 new Command('add', 'Add an account', 3, (sender, name, cmd) => {
   var clients = Server.getInstance().clients;
@@ -22,7 +22,7 @@ new Command('add', 'Add an account', 3, (sender, name, cmd) => {
       typeof password === 'undefined') {
 
     help = util.format("Unable to add account:\n\t%sInvalid Arguments\n\n" +
-                           "\t%sUsage: %s/chat 1 add <name> <password> [level]", ANSIColor.WHT, ANSIColor.RED, ANSIColor.WHT);
+                           "\t%sUsage: %s/chat 1 add <name> <password> [level]", Color.WHT, Color.RED, Color.WHT);
     MessageEvent.private(help).toClient(sender).send();
     return;
   }
@@ -34,7 +34,7 @@ new Command('add', 'Add an account', 3, (sender, name, cmd) => {
 
   // make sure that the user doesn't already exist
   if (Account.exists(username)) {
-    help = util.format("Unable to add account:\n\t%sUser already exists\n", ANSIColor.WHT);
+    help = util.format("Unable to add account:\n\t%sUser already exists\n", Color.WHT);
     MessageEvent.private(help).toClient(sender).send();
     return;
   }
@@ -44,6 +44,6 @@ new Command('add', 'Add an account', 3, (sender, name, cmd) => {
 
   // display the added account message to the main room.
   var room = Server.getInstance().rooms.main;
-  var message = util.format("%s Account %s added by %s", ANSIColor.header("chatserv"),ANSIColor.brackets(username, level),ANSIColor.name(client.name));
+  var message = util.format("%s Account %s added by %s", Color.header("chatserv"),Color.brackets(username, level),Color.name(client.name));
   MessageEvent.public(message).toClients(room.clients).send();
 });
