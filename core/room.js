@@ -10,6 +10,8 @@ var clients = [];
 var listeners = [];
 
 var util = require('util');
+
+var Color = require('./color');
 var MessageEvent = require('./messageevent');
 
 /**
@@ -108,6 +110,34 @@ class Room {
 
     // No need to tell the user they have left the room - joining seems good enough.
     // client.send(util.format("You have left the '%s' room", this.name));
+  }
+
+  addListener(client, silent) {
+    let publicMessage = util.format('%s is now listening to this room.', client.name);
+    let privateMessage = util.format("You are now listening to %s", Color.header(this.name));
+
+    this.listeners.set(client.name, client);
+
+    if (silent === undefined) {
+      MessageEvent.public(publicMessage).toClients(this.clientsAndListeners()).not(client).send();
+    }
+
+    MessageEvent.private(privateMessage).toClient(client).send();
+  }
+
+  removeListener(client, silent) {
+    let publicMessage = util.format('%s has stopped listening to this room.', client.name);
+    let privateMessage = util.format("You are no longer listening to %s", Color.header(this.name));
+
+    // remove the client from this room
+    this.listeners.delete(client.name);
+
+    // announce
+    if (silent === undefined) {
+      MessageEvent.public(publicMessage).toClients(this.clientsAndListeners()).not(client).send();
+    }
+
+    MessageEvent.private(privateMessage).toClient(client).send();
   }
 
   clientsAndListeners() {
