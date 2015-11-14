@@ -36,9 +36,9 @@ class Room {
     this.listeners = new Map();
 
     process.emit('chat.room.create', this);
-    process.on('chat.client.message.room', (messageEvent) => {
-      messageEvent.toClients(this.clients).not(messageEvent.sender).send();
-    });
+    //process.on('chat.client.message.room', (messageEvent) => {
+    //  messageEvent.toClients(this.clientsAndListeners()).not(messageEvent.sender).send();
+    //});
   }
 
   static get(name) {
@@ -83,7 +83,7 @@ class Room {
 
     // send a message to the room
     if (silent === undefined) {
-      MessageEvent.public(publicMessage).toClients(this.clients).not(client).send();
+      MessageEvent.public(publicMessage).toClients(this.clientsAndListeners()).not(client).send();
     }
 
     // send a message to the client
@@ -103,11 +103,25 @@ class Room {
 
     // announce
     if (silent === undefined) {
-      MessageEvent.public(publicMessage).toClients(this.clients).not(client).send();
+      MessageEvent.public(publicMessage).toClients(this.clientsAndListeners()).not(client).send();
     }
 
     // No need to tell the user they have left the room - joining seems good enough.
     // client.send(util.format("You have left the '%s' room", this.name));
+  }
+
+  clientsAndListeners() {
+    var result = [];
+
+    for (let value of this.clients.values()) {
+      result.push(value);
+    }
+
+    for (let value of this.listeners.values()) {
+      result.push(value);
+    }
+
+    return result;
   }
 }
 

@@ -80,7 +80,6 @@ lab.experiment('rooms', function () {
       room.clients.set('jim', { name: 'jim' });
       room.listeners.set('sam', { name: 'sam' });
 
-      console.log(room.clientsAndListeners());
       expect(room.clientsAndListeners().length).to.equal(2);
 
       done();

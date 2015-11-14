@@ -112,7 +112,7 @@ class Client {
         break;
       case MessageEvent.Type.PUBLIC:
         // message to all = 4: \nTinTin chats to everyone, 'hi'
-        process.emit('chat.client.message.room', message);
+        MessageEvent.public(message.data).toClients(this.room.clientsAndListeners()).not(this).send();
         break;
       case MessageEvent.Type.PRIVATE:
         // private message = 5: \nTinTin chats to you, 'hi'

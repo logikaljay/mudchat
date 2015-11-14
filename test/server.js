@@ -32,10 +32,17 @@ lab.experiment('server', function () {
 
   lab.test('server constructor should emit a started event', function(done) {
     process.on('chat.server.started', function(server) {
-      instance.stop();
       done();
     });
 
     instance = new Server('chatserver', 4050);
   });
+
+  lab.afterEach(function(next) {
+    if (typeof instance !== undefined) {
+      instance.stop();
+    }
+
+    next();
+  })
 });
