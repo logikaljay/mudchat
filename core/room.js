@@ -38,11 +38,13 @@ class Room {
     this.listeners = new Map();
 
     process.emit('chat.room.create', this);
-    //process.on('chat.client.message.room', (messageEvent) => {
-    //  messageEvent.toClients(this.clientsAndListeners()).not(messageEvent.sender).send();
-    //});
   }
 
+  /**
+   * Return a room by its name
+   * @param  {string} name the name of the room
+   * @return {Object}      the room to return
+   */
   static get(name) {
     var Server = require('./server');
     if (Server.getInstance()) {
@@ -53,14 +55,25 @@ class Room {
     }
   }
 
+  /**
+   * Set the silent state of the room
+   * @param {Boolean} value true will set the room to silent, false will allow communcation over the room
+   */
   setSilent(value) {
     this.silent = value || true;
   }
 
+  /**
+   * Check if the room is in a silent state or not
+   * @return {Boolean} true if the room is silent
+   */
   isSilent() {
     return this.silent;
   }
 
+  /**
+   * Destroy the room
+   */
   destroy() {
     // get the chat server
     var self = this;
@@ -112,6 +125,11 @@ class Room {
     // client.send(util.format("You have left the '%s' room", this.name));
   }
 
+  /**
+   * Add a listener to the Map
+   * @param {Object} client the client to add to the Map
+   * @param {Boolean} silent if true, inform the room of the event
+   */
   addListener(client, silent) {
     let publicMessage = util.format('%s is now listening to this room.', client.name);
     let privateMessage = util.format("You are now listening to %s", Color.header(this.name));
@@ -125,6 +143,11 @@ class Room {
     MessageEvent.private(privateMessage).toClient(client).send();
   }
 
+  /**
+   * Remove a listener from the Map
+   * @param  {Object} client the client to remove from the Map
+   * @param  {Boolean} silent if true, inform the room of the event
+   */
   removeListener(client, silent) {
     let publicMessage = util.format('%s has stopped listening to this room.', client.name);
     let privateMessage = util.format("You are no longer listening to %s", Color.header(this.name));
@@ -140,6 +163,10 @@ class Room {
     MessageEvent.private(privateMessage).toClient(client).send();
   }
 
+  /**
+   * return array of clients and listeners
+   * @return {array} array of clients and listeners
+   */
   clientsAndListeners() {
     var result = [];
 
