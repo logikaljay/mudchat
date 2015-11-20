@@ -18,7 +18,7 @@ class Plugin {
     }
 
     if (typeof this.name === 'undefined') {
-      return {loaded: false, message: "Plugin does not call super('pluginname')"};
+      return {loaded: false, message: "Plugin does not declare a name"};
     }
 
     return {loaded: true};
