@@ -28,7 +28,7 @@ process.on('uncaughtException', function (err) {
 */
 
 
-var server = new Server('chatserver', 4050);
+var server = new Server();
 
 var repl = require('repl');
 var r = repl.start('> ');

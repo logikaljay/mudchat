@@ -5,6 +5,7 @@ var Client = require('./core/client');
 var Handshake = require('./core/handshake');
 var Commands = require('./core/commands');
 var Account = require('./core/account');
+var Settings = require('./core/settings');
 var net = require('net');
 
 var instance;
@@ -18,9 +19,20 @@ var instance;
  */
 class Server {
   constructor(name, port) {
+    var settings = Settings.load();
+    if (name) {
+      settings.name = name;
+      settings.save();      
+    }
+    
+    if (port) {
+      settings.port = port;
+      settings.save();    
+    }
+        
     instance = this;
-    this.name = name || 'chatserver';
-    this.port = port || 4050;
+    this.name = name || settings.name;
+    this.port = port || settings.port;
 
     this.clients = new Map();
     this.rooms = new Map();
@@ -33,7 +45,7 @@ class Server {
     this.rooms.set('main', new Room('main', null, 0));
 
     // create the socket
-    this._server = this.createServer(port, this);
+    this._server = this.createServer(this.port, this);
 
     // emit that the chat server has started
     process.emit('chat.server.started', this);
