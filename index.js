@@ -36,19 +36,25 @@ r.context.server = server;
 r.context.clients = server.clients;
 r.context.rooms = server.rooms;
 r.context.plugins = server.plugins;
-r.context.send = function(client, message) {
-  var MessageEvent = require('./core/messageevent');
+r.defineCommand('send', {
+  help: 'send a message to [clients]',
+  action: function(client, message) {
 
-  if (message !== undefined) {
-    // send a message to a specific client
-    var to = server.clients.get(client);
-    if (to !== undefined) {
-      MessageEvent.private(message).toClient(to).send();
+    var MessageEvent = require('./core/messageevent');
+
+    if (message !== undefined) {
+      // send a message to a specific client
+      var to = server.clients.get(client);
+      if (to !== undefined) {
+        MessageEvent.private(message).toClient(to).send();
+      } else {
+        console.log("Could not find a client with the name '%s'", client);
+      }
     } else {
-      console.log("Could not find a client with the name '%s'", client);
+      // send a message to all clients
+      MessageEvent.private(client).toClients(server.clients).send();
     }
-  } else {
-    // send a message to all clients
-    MessageEvent.private(client).toClients(server.clients).send();
+
+    this.displayPrompt();
   }
-}
+});
