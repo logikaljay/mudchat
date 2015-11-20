@@ -37,7 +37,7 @@ class Server {
 
     // emit that the chat server has started
     process.emit('chat.server.started', this);
-
+    
     return this;
   }
 
@@ -63,10 +63,10 @@ class Server {
       process.emit('chat.client.connection', socket);
 
       // lets handshake with the client
-      var protocol = new Handshake(socket, handshake => {
+      new Handshake(socket, handshake => {
         // emit an event about the handshake
         process.emit('chat.client.handshake', handshake);
-
+        
         if (typeof handshake !== 'undefined') {
           var client = new Client(handshake.name, handshake.ip);
           client.port = handshake.port;
