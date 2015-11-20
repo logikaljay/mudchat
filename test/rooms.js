@@ -5,10 +5,13 @@ var Code = require('code');
 var expect = Code.expect;
 var lab = exports.lab = Lab.script();
 
+// test on a different port so we don't fail due to address in use.
+var TESTPORT = 5555;
+
 lab.experiment('rooms', function () {
 
     var Room = require('../src/core/room');
-    var Server = require('../src/core/server');
+    var Server = require('../src/server');
 
     var room;
 
@@ -28,7 +31,7 @@ lab.experiment('rooms', function () {
     });
 
     lab.test('make sure room doesn\'t exist after it is destroyed', function(done) {
-      var server = new Server('chatserver', 4050);
+      var server = new Server('chatserver', TESTPORT);
       Server.getInstance().rooms.set('main', new Room('main', 'password', '1'));
       var tmpRoom = Room.get('main');
       expect(tmpRoom).to.not.equal(undefined);
@@ -39,7 +42,7 @@ lab.experiment('rooms', function () {
     });
 
     lab.test('make sure clients is a Map', function(done) {
-      var server = new Server('chatserver', 4050);
+      var server = new Server('chatserver', TESTPORT);
       var tmpRoom = Server.getInstance().rooms.get('main');
       expect(tmpRoom.clients).to.be.an.instanceof(Map);
       server.stop();
@@ -47,7 +50,7 @@ lab.experiment('rooms', function () {
     });
 
     lab.test('make sure listeners is a Map', function(done) {
-      var server = new Server('chatserver', 4050);
+      var server = new Server('chatserver', TESTPORT);
       var tmpRoom = Server.getInstance().rooms.get('main');
       expect(tmpRoom.listeners).to.be.an.instanceof(Map);
       server.stop();
@@ -55,7 +58,7 @@ lab.experiment('rooms', function () {
     });
 
     lab.test('make sure silent gets set', function(done) {
-      var server = new Server('chatserver', 4050);
+      var server = new Server('chatserver', TESTPORT);
       var tmpRoom = Server.getInstance().rooms.get('main');
       tmpRoom.setSilent();
       expect(tmpRoom.silent).to.equal(true);
@@ -64,7 +67,7 @@ lab.experiment('rooms', function () {
     });
 
     lab.test('make sure isSilent returns corrently', function(done) {
-      var server = new Server('chatserver', 4050);
+      var server = new Server('chatserver', TESTPORT);
       var tmpRoom = Server.getInstance().rooms.get('main');
       tmpRoom.setSilent();
       expect(tmpRoom.isSilent()).to.equal(true);

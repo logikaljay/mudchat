@@ -64,7 +64,7 @@ class Account {
   }
 
   static getPath(name) {
-    var accountsPath = path.join(__dirname, '../accounts');
+    var accountsPath = path.join(__dirname, '../data/accounts');
     if (!fs.existsSync(accountsPath)) {
       fs.mkdirSync(accountsPath);
     }
