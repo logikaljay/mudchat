@@ -38,8 +38,9 @@ class Plugin {
       var plugin = require(pathToPlugin);
 
       if (plugin.validate()) {
-
+        var server = require('./server').getInstance();
         plugin.onLoad();
+        server.plugins.set(plugin.name, plugin);
         return {loaded:true};
       }
     } else {

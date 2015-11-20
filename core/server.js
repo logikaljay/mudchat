@@ -24,6 +24,7 @@ class Server {
 
     this.clients = new Map();
     this.rooms = new Map();
+    this.plugins = new Map();
 
     // load commands
     Commands.load();

@@ -27,4 +27,12 @@ process.on('uncaughtException', function (err) {
 });
 */
 
+
 var server = new Server('chatserver', 4050);
+
+var repl = require('repl');
+var r = repl.start('> ');
+r.context.server = server;
+r.context.clients = server.clients;
+r.context.rooms = server.rooms;
+r.context.plugins = server.plugins;
