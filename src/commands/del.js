@@ -2,7 +2,7 @@
 
 var util = require('util');
 
-var Server = require('../core/server');
+var Server = require('../server');
 var Command = require('../core/command');
 var MessageEvent = require('../core/messageevent');
 var Account = require('../core/account');

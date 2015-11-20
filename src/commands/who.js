@@ -4,7 +4,7 @@ var util = require('util');
 var moment = require('moment');
 var printf = require('printf');
 
-var Server = require('../core/server');
+var Server = require('../server');
 var Command = require('../core/command');
 var Commands = require('../core/commands');
 var MessageEvent = require('../core/messageevent');

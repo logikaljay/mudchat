@@ -1,15 +1,12 @@
 "use strict";
 
+var Server = require('../server');
 var Commands = require('../core/commands');
 var Command = require('../core/command');
-var Server = require('../core/server');
 var Room = require('../core/room');
 var MessageEvent = require('../core/messageevent');
 
 new Command('unlisten', 'stop listening to a [room]', 0, (sender, name, cmd) => {
-  var commands = Commands.all();
-  var response;
-
   if (cmd == [] || cmd.length < 1) {
     Commands.exec(sender, ['help', 'unlisten']);
     return;

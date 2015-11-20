@@ -59,7 +59,7 @@ class Commands {
    */
   static init() {
     // only if commands is undefined do we want to action the init
-    if (typeof commands === undefined) {
+    if (typeof commands === 'undefined') {
       commands = [];
 
       this.load();

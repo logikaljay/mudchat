@@ -1,6 +1,6 @@
 "use strict";
 
-var Server = require('../core/server');
+var Server = require('../server');
 var Command = require('../core/command');
 var Commands = require('../core/commands');
 

@@ -7,8 +7,8 @@ var lab = exports.lab = Lab.script();
 
 lab.experiment('rooms', function () {
 
-    var Room = require('../core/room');
-    var Server = require('../core/server');
+    var Room = require('../src/core/room');
+    var Server = require('../src/core/server');
 
     var room;
 

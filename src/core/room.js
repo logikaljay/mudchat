@@ -46,7 +46,7 @@ class Room {
    * @return {Object}      the room to return
    */
   static get(name) {
-    var Server = require('./server');
+    var Server = require('../server');
     if (Server.getInstance()) {
       var rooms = Server.getInstance().rooms;
       return rooms.get(name);
@@ -76,8 +76,7 @@ class Room {
    */
   destroy() {
     // get the chat server
-    var self = this;
-    var Server = require('./server');
+    var Server = require('../server');
     Server.getInstance().rooms.delete(this.name);
   }
 

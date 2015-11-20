@@ -1,8 +1,8 @@
 "use strict";
 
+var Server = require('../server');
 var Commands = require('../core/commands');
 var Command = require('../core/command');
-var Server = require('../core/server');
 var Room = require('../core/room');
 
 new Command('join', 'join a [room]', 0, (sender, name, cmd) => {

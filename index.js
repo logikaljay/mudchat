@@ -1,5 +1,5 @@
 // init core
-var Server = require('./core/server');
+var Server = require('./src/server');
 
 process.on('chat.server.started', function(server) {
   console.log("Chat server started on port %s:%s", server._server.address().address, server.port);
@@ -32,10 +32,14 @@ var server = new Server('chatserver', 4050);
 
 var repl = require('repl');
 var r = repl.start('> ');
+
+// setup the context for the repl.
 r.context.server = server;
 r.context.clients = server.clients;
 r.context.rooms = server.rooms;
 r.context.plugins = server.plugins;
+
+// add a send command to send a message
 r.defineCommand('send', {
   help: 'send a message to [clients]',
   action: function(client, message) {
@@ -58,3 +62,21 @@ r.defineCommand('send', {
     this.displayPrompt();
   }
 });
+
+// add a kill command to kill a connection
+r.defineCommand('kill', {
+  help: 'kill a client',
+  action: function(client, message) {
+    var c = server.clients.get(client);
+    var msg = "Your connection has been closed by the server administator.";
+    if (message) {
+      msg = message;
+    }
+    
+    if (c) {
+      c.kill(msg); 
+    }
+    
+    this.displayPrompt();
+  }
+})

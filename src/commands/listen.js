@@ -1,8 +1,8 @@
 "use strict";
 
+var Server = require('../server');
 var Commands = require('../core/commands');
 var Command = require('../core/command');
-var Server = require('../core/server');
 var Room = require('../core/room');
 var MessageEvent = require('../core/messageevent');
 

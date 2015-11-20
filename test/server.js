@@ -6,7 +6,7 @@ var expect = Code.expect;
 var lab = exports.lab = Lab.script();
 
 lab.experiment('server', function () {
-  var Server = require('../core/server');
+  var Server = require('../src/core/server');
   var instance;
 
   lab.test('returns a Server with correct properties when constructed', function (done) {

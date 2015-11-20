@@ -1,10 +1,10 @@
 "use strict";
 
-var Room = require('./room');
-var Client = require('./client');
-var Handshake = require('./handshake');
-var Commands = require('./commands');
-var Account = require('./account');
+var Room = require('./core/room');
+var Client = require('./core/client');
+var Handshake = require('./core/handshake');
+var Commands = require('./core/commands');
+var Account = require('./core/account');
 var net = require('net');
 
 var instance;
