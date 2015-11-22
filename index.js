@@ -79,4 +79,4 @@ r.defineCommand('kill', {
     
     this.displayPrompt();
   }
-})
+});

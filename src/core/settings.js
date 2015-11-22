@@ -31,4 +31,5 @@ class Settings {
 		fs.writeFileSync(SETTINGS_FILE, data, 'utf8');
 	}
 }
+
 module.exports = Settings;
