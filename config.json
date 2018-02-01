@@ -1,0 +1,5 @@
+{
+    "name": "chatserver",
+    "port": 4050,
+    "passwordTimeout": 30
+}

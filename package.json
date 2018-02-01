@@ -15,14 +15,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ascii-table": "0.0.9",
     "moment": "^2.10.6",
     "printf": "^0.2.3"
   },
   "devDependencies": {
-    "code": "^2.0.1",
+    "chai": "^3.5.0",
+    "code": "^2.3.0",
     "commitizen": "^2.4.4",
     "cz-conventional-changelog": "^1.1.4",
     "lab": "^7.2.0",
+    "mocha": "^3.0.2",
     "semantic-release": "^4.3.5"
   },
   "config": {
